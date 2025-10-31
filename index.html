@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiraya - Rent Anything, Anytime</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Add smooth scrolling for internal links (improves navigation) */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Custom Font Setup (Inter) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Light gray background */
+        }
+        /* Custom blue color for primary elements */
+        .kiraya-blue {
+            background-color: #1a4d95;
+        }
+        .kiraya-blue-text {
+            color: #1a4d95;
+        }
+        .kiraya-orange {
+            background-color: #ff9900;
+        }
+        .kiraya-orange-text {
+            color: #ff9900;
+        }
+
+        /* --- Scroll Animation Classes --- */
+        .fade-in-section {
+            opacity: 0;
+            /* Start slightly below the final position */
+            transform: translateY(20px);
+            /* Add performance hint for the browser */
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            transition-delay: 0.1s;
+            will-change: opacity, transform;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="#" class="flex-shrink-0 flex items-center">
+                    <span class="text-3xl font-extrabold kiraya-blue-text">Kiraya</span>
+                    <span class="text-3xl font-extrabold kiraya-orange-text">.</span>
+                </a>
+                <!-- Desktop Links -->
+                <nav class="hidden md:flex space-x-8">
+                    <!-- Link to browse.html -->
+                    <a href="browse.html" class="text-gray-600 hover:text-gray-900 font-medium transition duration-150 ease-in-out">Browse Rentals</a>
+                    <a href="#howitworks" class="text-gray-600 hover:text-gray-900 font-medium transition duration-150 ease-in-out">How It Works</a>
+                    <a href="#categories" class="text-gray-600 hover:text-gray-900 font-medium transition duration-150 ease-in-out">Categories</a>
+                    <!-- Updated List an Item link -->
+                    <a href="list.html" class="kiraya-blue text-white px-3 py-1 rounded-full text-sm font-semibold hover:bg-opacity-90 transition duration-150 ease-in-out shadow-md">List an Item</a>
+                </nav>
+                <!-- Mobile Menu Button (Hidden on desktop) -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-kiraya-blue" aria-expanded="false">
+                    <!-- Icon for mobile menu -->
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50">
+                <!-- Link to browse.html -->
+                <a href="browse.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Browse Rentals</a>
+                <a href="#howitworks" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">How It Works</a>
+                <a href="#categories" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Categories</a>
+                <!-- Updated List an Item link for mobile -->
+                <a href="list.html" class="block w-full text-center kiraya-blue text-white px-3 py-2 rounded-full text-base font-semibold hover:bg-opacity-90 transition duration-150 ease-in-out mt-2">List an Item</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="kiraya-blue text-white py-16 md:py-24 shadow-xl">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight mb-4">
+                    <span class="block">Rent Anything. Simplify Everything.</span>
+                </h1>
+                
+                <!-- Made in India Mention -->
+                <p class="text-md text-gray-300 mb-2 font-medium flex items-center justify-center">
+                    Proudly serving the nation. A trusted platform, <span class="ml-2 font-bold text-kiraya-orange">Made in India.</span>
+                </p>
+
+                <p class="text-xl sm:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto">
+                    From a weekend car to a PlayStation 5, Kiraya connects you with items you need, just when you need them.
+                </p>
+
+                <!-- Primary CTA button updated to link directly to browse.html -->
+                <div class="flex justify-center">
+                    <a href="browse.html" class="kiraya-orange text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:bg-opacity-90 transition duration-300 transform hover:scale-105">
+                        Start Browsing Rentals
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section (Responsive to 2 columns on mobile) -->
+        <section id="categories" class="py-16 md:py-20 fade-in-section">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-12">Popular Rental Categories</h2>
+
+                <!-- Grid is 2 columns on mobile (default) and 5 on medium screens and up -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                    <!-- Category Card 1: Cars -->
+                    <div class="bg-white p-6 rounded-2xl shadow-xl transition transform hover:scale-105 duration-300 text-center border border-gray-100">
+                        <span class="text-4xl mb-3 block">🚗</span>
+                        <h3 class="text-lg font-semibold kiraya-blue-text">Vehicles</h3>
+                        <p class="text-sm text-gray-500">Cars & Motorcycles</p>
+                    </div>
+                    <!-- Category Card 2: Bikes -->
+                    <div class="bg-white p-6 rounded-2xl shadow-xl transition transform hover:scale-105 duration-300 text-center border border-gray-100">
+                        <span class="text-4xl mb-3 block">🚲</span>
+                        <h3 class="text-lg font-semibold kiraya-blue-text">Cycling</h3>
+                        <p class="text-sm text-gray-500">Bikes & Scooters</p>
+                    </div>
+                    <!-- Category Card 3: Houses -->
+                    <div class="bg-white p-6 rounded-2xl shadow-xl transition transform hover:scale-105 duration-300 text-center border border-gray-100">
+                        <span class="text-4xl mb-3 block">🏡</span>
+                        <h3 class="text-lg font-semibold kiraya-blue-text">Property</h3>
+                        <p class="text-sm text-gray-500">Homes & Spaces</p>
+                    </div>
+                    <!-- Category Card 4: PlayStation/Games -->
+                    <div class="bg-white p-6 rounded-2xl shadow-xl transition transform hover:scale-105 duration-300 text-center border border-gray-100">
+                        <span class="text-4xl mb-3 block">🎮</span>
+                        <h3 class="text-lg font-semibold kiraya-blue-text">Entertainment</h3>
+                        <p class="text-sm text-gray-500">Consoles & Games</p>
+                    </div>
+                    <!-- Category Card 5: Tools/Misc -->
+                    <!-- This will span the full width if an odd number of items, or align center, ensuring good mobile layout -->
+                    <div class="bg-white p-6 rounded-2xl shadow-xl transition transform hover:scale-105 duration-300 text-center border border-gray-100 md:col-span-1 col-span-2 sm:col-span-1">
+                        <span class="text-4xl mb-3 block">🔧</span>
+                        <h3 class="text-lg font-semibold kiraya-blue-text">Gear</h3>
+                        <p class="text-sm text-gray-500">Tools & Equipment</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Listings Section removed -->
+
+        <!-- How It Works Section -->
+        <section id="howitworks" class="py-16 md:py-20 fade-in-section bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-12">Renting with Kiraya is Simple</h2>
+
+                <!-- Grid is 1 column on mobile, 3 on medium screens and up -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <!-- Step 1 -->
+                    <div class="text-center p-6 bg-white rounded-xl shadow-lg border-t-4 border-kiraya-blue">
+                        <div class="kiraya-blue mx-auto w-12 h-12 flex items-center justify-center rounded-full text-white font-bold text-xl mb-4">1</div>
+                        <h3 class="text-xl font-bold mb-3">Browse & Discover</h3>
+                        <p class="text-gray-600">Search our diverse categories—from electronics to equipment—and find the perfect item near you.</p>
+                    </div>
+                    <!-- Step 2 - Updated text -->
+                    <div class="text-center p-6 bg-white rounded-xl shadow-lg border-t-4 border-kiraya-orange">
+                        <div class="kiraya-orange mx-auto w-12 h-12 flex items-center justify-center rounded-full text-white font-bold text-xl mb-4">2</div>
+                        <h3 class="text-xl font-bold mb-3">Contact & Confirm</h3>
+                        <p class="text-gray-600">You'll find detailed contact information on each listing in the browse section to finalize terms and dates.</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="text-center p-6 bg-white rounded-xl shadow-lg border-t-4 border-kiraya-blue">
+                        <div class="kiraya-blue mx-auto w-12 h-12 flex items-center justify-center rounded-full text-white font-bold text-xl mb-4">3</div>
+                        <h3 class="text-xl font-bold mb-3">Pick Up & Enjoy</h3>
+                        <p class="text-gray-600">Meet the owner, collect your item, and start using it for the agreed-upon rental period!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer (Links removed for a cleaner, focused mobile experience) -->
+    <footer class="kiraya-blue text-white py-8 mt-auto shadow-inner">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="mb-2">
+                <span class="text-2xl font-extrabold">Kiraya</span>
+                <span class="text-2xl font-extrabold kiraya-orange-text">.</span>
+            </div>
+            <p class="text-sm text-gray-300 mt-1">&copy; 2024 Kiraya. The Rental Marketplace. <span class="font-semibold text-kiraya-orange">Made in India.</span></p>
+        </div>
+    </footer>
+
+    <!-- Global Modal for Inquiries/Notifications has been removed -->
+
+    <script>
+        // --- JavaScript for UI Logic ---
+        
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true' || false;
+            mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                // Check if the link is an internal anchor link (starts with '#') before closing the menu
+                if (link.getAttribute('href').startsWith('#')) {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenuButton.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+        
+        // --- Intersection Observer for Scroll Animation ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                // If the element is visible
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    // Stop observing once visible to prevent unnecessary checks
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            // Trigger the animation when 15% of the section is visible
+            rootMargin: '0px',
+            threshold: 0.15
+        });
+
+        // Target all sections that need to fade in
+        document.querySelectorAll('.fade-in-section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
