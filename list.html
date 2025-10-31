@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiraya - List Your Item</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7; /* Very light gray background */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Container -->
+    <div id="app-container" class="min-h-screen flex items-center justify-center p-4 sm:p-8">
+        <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl p-6 sm:p-10 my-8 border border-gray-100">
+            
+            <!-- Back to Home Link (Redirects to index.html) -->
+            <div class="mb-6 -mt-3">
+                <a href="index.html" class="text-gray-500 hover:text-green-700 font-medium text-base transition duration-150 flex items-center w-max">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Home
+                </a>
+            </div>
+            
+            <header class="text-center mb-10">
+                <h1 class="text-5xl font-extrabold text-green-800 tracking-tight">Kiraya</h1>
+                <p class="mt-2 text-gray-500 text-lg">Your one-item-per-week listing platform</p>
+                <div id="status-message" class="mt-4 p-3 rounded-xl text-sm font-medium transition duration-300 shadow-inner hidden"></div>
+            </header>
+
+            <!-- Item Listing Form -->
+            <form id="listing-form" class="space-y-7">
+                
+                <!-- User Guide Section -->
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg text-blue-800 text-sm">
+                    <p class="font-semibold mb-1">Important Rule:</p>
+                    <p>You can list only **one item per 7 days** to ensure quality and visibility for all listings.</p>
+                </div>
+
+                <!-- Personal Details Section -->
+                <h2 class="text-2xl font-semibold text-gray-800 border-b border-gray-200 pb-3">1. Your Contact Information</h2>
+                
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Your Full Name</label>
+                    <input type="text" id="name" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-green-600 focus:border-green-600 transition duration-150 shadow-sm" placeholder="e.g., Ramesh Kumar">
+                </div>
+
+                <div>
+                    <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">Phone Number (10-Digit Indian Mobile)</label>
+                    <input type="tel" id="phone" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-green-600 focus:border-green-600 transition duration-150 shadow-sm" placeholder="e.g., 9876543210">
+                    <p id="phone-error" class="text-red-500 text-xs mt-1 hidden">Please enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9).</p>
+                </div>
+                
+                <!-- Item Details Section -->
+                <h2 class="text-2xl font-semibold text-gray-800 border-b border-gray-200 pb-3 pt-4">2. Item Details</h2>
+
+                <div>
+                    <label for="item-type" class="block text-sm font-semibold text-gray-700 mb-2">Item Category</label>
+                    <select id="item-type" required class="w-full p-3 border border-gray-300 bg-white rounded-xl focus:ring-green-600 focus:border-green-600 transition duration-150 shadow-sm">
+                        <option value="" disabled selected>Select an Item Type</option>
+                        <option value="car">Car / Vehicle</option>
+                        <option value="bike">Bike / Scooter</option>
+                        <option value="electronics">Electronics (Cameras, Laptops)</option>
+                        <option value="games">Games / Consoles</option>
+                        <option value="tools">Tools / Equipment</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="item-name" class="block text-sm font-semibold text-gray-700 mb-2">Item Name / Listing Title</label>
+                    <input type="text" id="item-name" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-green-600 focus:border-green-600 transition duration-150 shadow-sm" placeholder="e.g., Hero Honda Splendor, DSLR Camera">
+                </div>
+
+                <div>
+                    <label for="rental-rate" class="block text-sm font-semibold text-gray-700 mb-2">Daily Rental Rate (INR)</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 font-bold">₹</span>
+                        <input type="number" id="rental-rate" required min="1" class="w-full p-3 pl-8 border border-gray-300 rounded-xl focus:ring-green-600 focus:border-green-600 transition duration-150 shadow-sm" placeholder="e.g., 500">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">Detailed Description</label>
+                    <textarea id="description" rows="4" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-green-600 focus:border-green-600 transition duration-150 shadow-sm" placeholder="Include item condition, pickup location, and any specific terms."></textarea>
+                </div>
+                
+                <!-- Optional PDF Field -->
+                <div>
+                    <label for="pdf-link" class="block text-sm font-semibold text-gray-700 mb-2">Optional: Link to Images/Detailed PDF (e.g., Google Drive link)</label>
+                    <input type="url" id="pdf-link" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-green-600 focus:border-green-600 transition duration-150 shadow-sm" placeholder="https://drive.google.com/your-item-details.pdf">
+                    <p class="text-gray-500 text-xs mt-1">Provide a link to images or a detailed PDF, if available (optional).</p>
+                </div>
+
+                <!-- Submission Button -->
+                <button type="submit" id="submit-button" class="w-full py-3 px-4 bg-green-700 text-white font-bold text-lg rounded-xl shadow-lg hover:bg-green-800 transition duration-200 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 flex items-center justify-center disabled:bg-gray-400" disabled>
+                    <span id="button-text">List Item Now</span>
+                    <svg id="loading-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDK Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase variables
+        let app;
+        let db;
+        let auth;
+        let userId;
+
+        // Configuration and App ID setup
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-kiraya-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // DOM Elements
+        const form = document.getElementById('listing-form');
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const statusMessage = document.getElementById('status-message');
+        const phoneInput = document.getElementById('phone');
+        const phoneError = document.getElementById('phone-error');
+
+        // --- Utility Functions ---
+
+        /** Shows a temporary message in the status bar */
+        function showStatus(message, type = 'success') {
+            statusMessage.textContent = message;
+            statusMessage.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
+            statusMessage.classList.add('shadow-inner'); // Add shadow for effect
+            
+            if (type === 'error') {
+                statusMessage.classList.add('bg-red-100', 'text-red-700');
+            } else if (type === 'success') {
+                statusMessage.classList.add('bg-green-100', 'text-green-700');
+            } else {
+                statusMessage.classList.add('bg-blue-100', 'text-blue-700');
+            }
+            statusMessage.scrollIntoView({ behavior: 'smooth' });
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusMessage.classList.add('hidden');
+            }, 5000);
+        }
+
+        function setSubmitting(isSubmitting) {
+            submitButton.disabled = isSubmitting;
+            if (isSubmitting) {
+                loadingSpinner.classList.remove('hidden');
+                buttonText.textContent = 'Checking availability...';
+                form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
+            } else {
+                loadingSpinner.classList.add('hidden');
+                buttonText.textContent = 'List Item Now';
+                form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
+            }
+        }
+        
+        /**
+         * Validates a 10-digit Indian mobile number (starts with 6, 7, 8, or 9).
+         * @param {string} phone - The phone number string.
+         * @returns {boolean} True if valid, false otherwise.
+         */
+        function validateIndianPhoneNumber(phone) {
+            const regex = /^[6-9]\d{9}$/;
+            return regex.test(phone);
+        }
+        
+        // Live validation for phone number
+        phoneInput.addEventListener('input', () => {
+            if (phoneInput.value.length > 0 && !validateIndianPhoneNumber(phoneInput.value)) {
+                phoneError.classList.remove('hidden');
+                phoneInput.classList.add('border-red-500');
+            } else {
+                phoneError.classList.add('hidden');
+                phoneInput.classList.remove('border-red-500');
+            }
+        });
+
+
+        // --- Firebase Initialization and Auth ---
+
+        async function initializeFirebase() {
+            try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    showStatus("Firebase configuration missing. Running in demo mode.", 'error');
+                    submitButton.disabled = false;
+                    return;
+                }
+                
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Sign in with custom token or anonymously
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                userId = auth.currentUser?.uid || crypto.randomUUID();
+                
+                // Once authenticated, enable the form and check status
+                submitButton.disabled = false;
+                showStatus("Ready to list your item! User ID: " + userId.substring(0, 8) + "...", 'info');
+
+                // Start checking the last listing status
+                checkLastListingStatus();
+
+            } catch (error) {
+                console.error("Error initializing Firebase or during authentication:", error);
+                showStatus("Failed to initialize the app. Check console for details.", 'error');
+            }
+        }
+
+        // --- Core Business Logic: Weekly Listing Check ---
+
+        const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+        function getLastListingDocRef() {
+            const userPath = `/artifacts/${appId}/users/${userId}/listings`;
+            // Using a specific document ID 'last_listing' to store the last listing time for the user
+            return doc(db, userPath, 'last_listing');
+        }
+
+        /**
+         * Checks Firestore to see if the user has listed an item in the last 7 days.
+         * @returns {boolean} True if listing is allowed, false otherwise.
+         */
+        function checkListingCooldown(lastListingTimestamp) {
+            if (!lastListingTimestamp) return true; // No previous listing, so allowed
+
+            // Firestore Timestamps need to be converted to Date objects
+            const lastListingDate = lastListingTimestamp.toDate(); 
+            const timeSinceLastListing = new Date().getTime() - lastListingDate.getTime();
+            
+            return timeSinceLastListing >= SEVEN_DAYS_MS;
+        }
+
+        function checkLastListingStatus() {
+            if (!db || !userId) return;
+
+            const docRef = getLastListingDocRef();
+            
+            // Use onSnapshot for real-time updates of the status message
+            onSnapshot(docRef, (docSnap) => {
+                const statusMsgEl = document.getElementById('status-message');
+                statusMsgEl.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
+                statusMsgEl.classList.add('bg-blue-100', 'text-blue-700'); // Default info color
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const lastListingTimestamp = data.timestamp;
+
+                    // Ensure timestamp is valid before proceeding
+                    if (!lastListingTimestamp || typeof lastListingTimestamp.toDate !== 'function') {
+                         statusMsgEl.textContent = "Error: Invalid last listing record found. Please proceed with caution.";
+                         return;
+                    }
+                    
+                    const isAllowed = checkListingCooldown(lastListingTimestamp);
+                    const lastDate = lastListingTimestamp.toDate().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+                    if (isAllowed) {
+                        statusMsgEl.textContent = `Welcome back! Your last listing was on ${lastDate}. You can list a new item now.`;
+                        statusMsgEl.classList.remove('bg-blue-100', 'text-blue-700');
+                        statusMsgEl.classList.add('bg-green-100', 'text-green-700');
+                        submitButton.disabled = false;
+                        buttonText.textContent = 'List Item Now';
+                    } else {
+                        const nextListingTime = lastListingTimestamp.toDate().getTime() + SEVEN_DAYS_MS;
+                        const remainingMs = nextListingTime - new Date().getTime();
+                        const remainingHours = Math.ceil(remainingMs / (1000 * 60 * 60));
+                        const remainingDays = Math.ceil(remainingHours / 24);
+
+                        statusMsgEl.textContent = `You listed an item recently on ${lastDate}. Please wait ${remainingDays} more day(s) before listing another item.`;
+                        statusMsgEl.classList.remove('bg-blue-100', 'text-blue-700');
+                        statusMsgEl.classList.add('bg-red-100', 'text-red-700');
+                        submitButton.disabled = true;
+                        buttonText.textContent = 'Wait for Cooldown';
+                    }
+                } else {
+                    statusMsgEl.textContent = "It looks like you haven't listed an item yet. Go ahead and list your first item!";
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'List Item Now';
+                }
+            }, (error) => {
+                console.error("Error listening to listing status:", error);
+                showStatus("Error checking listing status. Please try refreshing.", 'error');
+                submitButton.disabled = false;
+            });
+        }
+
+
+        // --- Form Submission Handler ---
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!db || !userId) {
+                showStatus("App is not fully initialized. Please wait a moment.", 'error');
+                return;
+            }
+
+            const phoneValue = document.getElementById('phone').value;
+            if (!validateIndianPhoneNumber(phoneValue)) {
+                showStatus("Validation Error: Please correct your 10-digit Indian phone number.", 'error');
+                phoneError.classList.remove('hidden');
+                phoneInput.focus();
+                return;
+            }
+            
+            setSubmitting(true);
+
+            try {
+                const docRef = getLastListingDocRef();
+                const docSnap = await getDoc(docRef);
+                
+                let isAllowed = true;
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    isAllowed = checkListingCooldown(data.timestamp);
+                }
+
+                if (!isAllowed) {
+                    showStatus("The 7-day listing rule is active! You must wait until the cooldown period is over.", 'error');
+                    setSubmitting(false);
+                    return;
+                }
+
+                // If allowed, proceed with the listing
+                const timestamp = new Date();
+                const listingData = {
+                    timestamp: timestamp,
+                    name: document.getElementById('name').value,
+                    phone: phoneValue,
+                    itemType: document.getElementById('item-type').value,
+                    itemName: document.getElementById('item-name').value,
+                    rentalRate: document.getElementById('rental-rate').value, // New field
+                    description: document.getElementById('description').value,
+                    pdfLink: document.getElementById('pdf-link').value || null, // New optional field
+                    userId: userId 
+                };
+
+                // 1. Update the 'last_listing' document to start the cooldown
+                await setDoc(docRef, listingData); 
+                
+                showStatus(`Success! Your item, '${listingData.itemName}', has been listed for ₹${listingData.rentalRate}. Redirecting to Browse Rentals...`, 'success');
+                form.reset(); // Clear the form
+                
+                // 2. Redirect the user to browse.html after a short delay
+                setTimeout(() => {
+                    window.location.href = 'browse.html';
+                }, 1500); // 1.5 seconds delay to show success message
+                
+            } catch (error) {
+                console.error("Error submitting listing:", error);
+                showStatus(`Listing failed. Please check the console. Error: ${error.message}`, 'error');
+            } finally {
+                setSubmitting(false);
+            }
+        });
+
+        // Initialize the application on load
+        window.onload = initializeFirebase;
+    </script>
+</body>
+</html>
