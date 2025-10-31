@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiraya | Browse New Rentals</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        /* Custom scrollbar matching the new primary blue theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #1d4ed8; /* blue-700 */
+            border-radius: 10px;
+        }
+
+        /* CSS for the smooth scroll-reveal animation */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .scroll-animate.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Header & Navigation (Blue/White Theme) -->
+    <header class="bg-white shadow-lg sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <!-- Logo in primary blue -->
+            <div class="text-3xl font-extrabold text-blue-700 tracking-tight">
+                Kiraya
+            </div>
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex space-x-6 text-gray-600 font-medium">
+                <!-- Back to Home link with corrected href -->
+                <a href="index.html" class="hover:text-amber-500 transition duration-150">Back to Home</a>
+                <!-- Active Browse Rentals link in primary blue -->
+                <a href="#" class="text-blue-700 font-bold border-b-2 border-blue-700 pb-1">Browse Rentals</a>
+            </nav>
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-700 focus:outline-none p-1 rounded-md transition duration-150">
+                <!-- Hamburger Icon -->
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Navigation Drawer (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 pb-2">
+            <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-500 transition duration-150">
+                Back to Home
+            </a>
+            <a href="#" class="block py-2 px-4 text-sm text-blue-700 font-bold bg-blue-50/50">
+                Browse Rentals
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        <!-- Hero/Search Bar -->
+        <div class="text-center mb-10 md:mb-16">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-3">
+                Discover Fresh Listings
+            </h1>
+            <p class="text-base sm:text-xl text-gray-500 max-w-2xl mx-auto px-2">
+                Cars, bikes, gadgets, and games added daily. Find the perfect rental near you!
+            </p>
+
+            <!-- Search Input (Optimized touch target size) -->
+            <div class="mt-8 max-w-lg mx-auto">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Search for a rental item..." 
+                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 shadow-lg transition duration-200 text-lg">
+                    <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                         <!-- Magnifying Glass Icon -->
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Filter Chips (Ensured wrapping on mobile) -->
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10">
+            <button class="category-btn px-3 py-2 text-sm font-semibold rounded-full bg-blue-700 text-white shadow-md hover:bg-blue-800 transition duration-150 active" data-category="All">
+                All Items
+            </button>
+            <button class="category-btn px-3 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-300 shadow-sm hover:border-blue-700 transition duration-150" data-category="Vehicles">
+                Vehicles
+            </button>
+            <button class="category-btn px-3 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-300 shadow-sm hover:border-blue-700 transition duration-150" data-category="Electronics">
+                Electronics
+            </button>
+            <button class="category-btn px-3 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-300 shadow-sm hover:border-blue-700 transition duration-150" data-category="Games">
+                Games & Hobbies
+            </button>
+            <button class="category-btn px-3 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-300 shadow-sm hover:border-blue-700 transition duration-150" data-category="Outdoor">
+                Outdoor Gear
+            </button>
+        </div>
+
+        <!-- Rental Listings Grid (Single column on mobile) -->
+        <section id="rental-listings" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div class="col-span-full text-center p-10 bg-white rounded-xl shadow-lg">
+                <p class="text-xl text-gray-600 font-semibold">
+                    No new rentals are available right now. Check back soon!
+                </p>
+                <p class="text-sm text-gray-400 mt-2">
+                    Listings will appear here after they are added.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <p class="text-center text-gray-400">&copy; 2025 Kiraya. Renting made easy in India.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu, Filter Functionality, and Animations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const rentalListings = document.getElementById('rental-listings');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            // --- Mobile Menu Toggle ---
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+
+            // --- Scroll Animation Setup ---
+            const animateCardsOnScroll = () => {
+                const cards = rentalListings.querySelectorAll('.rental-card');
+                
+                // If there are no cards, we stop the observer setup
+                if (cards.length === 0) return; 
+
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            // Delay the show state slightly for a staggered effect
+                            setTimeout(() => {
+                                entry.target.classList.add('show');
+                            }, 50); 
+                            observer.unobserve(entry.target); // Stop observing once shown
+                        }
+                    });
+                }, {
+                    rootMargin: '0px',
+                    threshold: 0.1 // Trigger when 10% of the item is visible
+                });
+
+                cards.forEach(card => {
+                    card.classList.add('scroll-animate'); // Add hidden state class
+                    observer.observe(card);
+                });
+            };
+            animateCardsOnScroll(); // Run animation setup immediately
+
+            // --- Filter Functionality ---
+            const filterRentals = (category) => {
+                const cards = rentalListings.querySelectorAll('.rental-card');
+                
+                cards.forEach(card => {
+                    const cardCategory = card.getAttribute('data-category');
+                    
+                    // Show if category is 'All' or matches the card's category
+                    if (category === 'All' || cardCategory === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Re-run the animation observer on the visible cards after filtering
+                animateCardsOnScroll();
+            };
+
+            // Event listener for category buttons
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedCategory = this.getAttribute('data-category');
+
+                    // 1. Update button styles (using blue theme)
+                    categoryButtons.forEach(btn => {
+                        btn.classList.remove('bg-blue-700', 'text-white', 'hover:bg-blue-800', 'active');
+                        btn.classList.add('bg-white', 'text-gray-700', 'border', 'border-gray-300', 'hover:border-blue-700');
+                    });
+                    this.classList.add('bg-blue-700', 'text-white', 'hover:bg-blue-800', 'active');
+                    this.classList.remove('bg-white', 'text-gray-700', 'border', 'border-gray-300', 'hover:border-blue-700');
+
+
+                    // 2. Perform the filter (currently does nothing as there are no cards)
+                    filterRentals(selectedCategory);
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
