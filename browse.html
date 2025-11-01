@@ -8,340 +8,166 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background-color: #1d4ed8; border-radius: 10px; }
-
         .scroll-animate { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
         .scroll-animate.show { opacity: 1; transform: translateY(0); }
-
-        .modal { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; 
-        }
-        .modal.show { display: flex; animation: fadeIn 0.3s; }
-        .modal-content { background: white; padding: 28px; border-radius: 16px; max-width: 500px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
         .highlight-card { animation: glow 2s ease-in-out 2; border: 3px solid #10b981 !important; }
         @keyframes glow { 0%, 100% { box-shadow: 0 0 15px #10b981; } 50% { box-shadow: 0 0 30px #10b981; } }
-
-        .warning { background: #fef3c7; color: #92400e; padding: 12px; border-radius: 8px; margin: 16px 0; font-size: 0.9rem; }
+        .countdown { font-size: 0.875rem; font-weight: 600; color: #dc2626; }
+        .expired { opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <!-- File Protocol Warning -->
-    <div id="fileWarning" class="warning hidden text-center mx-4">
-        <strong>Warning:</strong> You're opening via <code>file://</code>. Listings may not sync across devices. 
-        Use a local server (e.g., Live Server in VS Code) for full mobile sync.
-    </div>
-
-    <!-- Header -->
     <header class="bg-white shadow-lg sticky top-0 z-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div class="text-3xl font-extrabold text-blue-700 tracking-tight">Kiraya</div>
-            <nav class="hidden md:flex space-x-6 text-gray-600 font-medium">
-                <a href="index.html" class="hover:text-amber-500 transition">Back to Home</a>
-                <a href="#" class="text-blue-700 font-bold border-b-2 border-blue-700 pb-1">Browse Rentals</a>
-            </nav>
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-3xl font-bold text-blue-700">Kiraya</div>
+            <a href="index.html" class="text-blue-600 hover:underline">Home</a>
         </div>
     </header>
 
-    <!-- Main -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div class="text-center mb-10">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-3">Discover Fresh Listings</h1>
-            <p class="text-lg text-gray-500">Cars, bikes, gadgets, and games added daily.</p>
-        </div>
-
-        <!-- Search -->
-        <div class="max-w-lg mx-auto mb-10">
-            <div class="relative">
-                <input type="text" id="search-input" placeholder="Search by name, phone, or location..."
-                       class="w-full pl-12 pr-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 shadow-lg transition text-lg">
-                <svg class="w-6 h-6 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-        </div>
-
-        <!-- Filters -->
-        <div class="flex flex-wrap justify-center gap-2 mb-10">
-            <button class="category-btn px-4 py-2 text-sm font-semibold rounded-full bg-blue-700 text-white shadow-md hover:bg-blue-800" data-category="All">All</button>
-            <button class="category-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-300 shadow-sm hover:border-blue-700" data-category="Vehicles">Vehicles</button>
-            <button class="category-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-300 shadow-sm hover:border-blue-700" data-category="Electronics">Electronics</button>
-            <button class="category-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-300 shadow-sm hover:border-blue-700" data-category="Games">Games</button>
-            <button class="category-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-300 shadow-sm hover:border-blue-700" data-category="Other">Other</button>
-        </div>
-
-        <!-- Grid -->
-        <section id="rental-listings" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center mb-8">Browse Rentals</h1>
+        <div id="rental-listings" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             <!-- Cards injected here -->
-        </section>
+        </div>
     </main>
 
-    <!-- Detail Modal -->
-    <div id="detailModal" class="modal">
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="modalTitle" class="text-xl font-bold text-gray-900"></h3>
-                <button id="closeDetail" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <img id="modalImage" src="" alt="" class="w-full h-56 object-cover rounded-xl mb-4">
-            <div id="modalDetails" class="space-y-2 text-sm text-gray-700"></div>
-            <button id="removeBtn" class="mt-6 w-full bg-red-600 text-white py-3 rounded-xl hover:bg-red-700 font-semibold">Remove Listing</button>
-        </div>
-    </div>
-
-    <!-- Delete Modal -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Remove Listing</h3>
-            <p class="text-sm text-gray-600 mb-4">Enter your 6-digit password to delete.</p>
-            <input type="password" id="deletePassword" maxlength="6" inputmode="numeric" placeholder="123456"
-                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-center text-lg font-mono mb-4">
-            <div class="flex gap-3">
-                <button id="confirmDelete" class="flex-1 bg-red-600 text-white py-3 rounded-xl hover:bg-red-700 font-semibold">Remove</button>
-                <button id="cancelDelete" class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl hover:bg-gray-300 font-semibold">Cancel</button>
-            </div>
-            <p id="errorMsg" class="text-red-600 text-sm mt-3 text-center hidden"></p>
-            <p id="lockoutMsg" class="text-orange-600 text-sm mt-3 text-center hidden">
-                Too many attempts. Try again in <span id="countdown">30</span>s.
-            </p>
-        </div>
-    </div>
-
-    <footer class="bg-gray-800 mt-12 text-center text-gray-400 py-8">
-        &copy; 2025 Kiraya. Renting made easy in India.
-    </footer>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check for file:// protocol
-            if (window.location.protocol === 'file:') {
-                document.getElementById('fileWarning').classList.remove('hidden');
+        // Indian Time (IST) = UTC + 5:30
+        const getIndianTime = () => {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            return new Date(utc + (5.5 * 3600000));
+        };
+
+        const loadListings = () => {
+            let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
+            const now = getIndianTime().getTime();
+            const oneWeekAgo = now - (7 * 24 * 60 * 60 * 1000);
+
+            // Remove expired
+            listings = listings.filter(i => i.timestamp >= oneWeekAgo);
+            localStorage.setItem('kirayaListings', JSON.stringify(listings));
+
+            renderListings(listings, now);
+        };
+
+        const renderListings = (listings, now) => {
+            const container = document.getElementById('rental-listings');
+            container.innerHTML = '';
+            if (!listings.length) {
+                container.innerHTML = `<div class="col-span-full text-center p-10 bg-white rounded-xl shadow"><p class="text-xl text-gray-600">No rentals available.</p></div>`;
+                return;
             }
 
-            const rentalListings = document.getElementById('rental-listings');
-            const detailModal = document.getElementById('detailModal');
-            const deleteModal = document.getElementById('deleteModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalImage = document.getElementById('modalImage');
-            const modalDetails = document.getElementById('modalDetails');
-            const removeBtn = document.getElementById('removeBtn');
-            const deletePassword = document.getElementById('deletePassword');
-            const confirmDelete = document.getElementById('confirmDelete');
-            const cancelDelete = document.getElementById('cancelDelete');
-            const errorMsg = document.getElementById('errorMsg');
-            const lockoutMsg = document.getElementById('lockoutMsg');
-            const countdownSpan = document.getElementById('countdown');
+            const lastId = localStorage.getItem('lastListedItemId');
 
-            let currentItem = null;
-            let attempts = 0;
-            let lockoutUntil = 0;
+            listings.forEach(item => {
+                const expiryTime = item.timestamp + (7 * 24 * 60 * 60 * 1000);
+                const timeLeft = expiryTime - now;
 
-            const categoryMap = { car: 'Vehicles', bike: 'Vehicles', house: 'Other', games: 'Games', consoles: 'Electronics', books: 'Other', other: 'Other' };
+                const card = document.createElement('div');
+                card.className = `scroll-animate bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition ${item.id == lastId ? 'highlight-card' : ''} ${timeLeft <= 0 ? 'expired' : ''}`;
+                card.dataset.id = item.id;
 
-            const loadListings = () => {
-                let listings = [];
-                try {
-                    listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
-                } catch (e) {
-                    console.error("Failed to parse listings:", e);
-                    listings = [];
-                }
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
-                listings = listings.filter(i => i && i.timestamp >= oneWeekAgo);
-                localStorage.setItem('kirayaListings', JSON.stringify(listings));
-                renderListings(listings);
-            };
+                const countdownHTML = timeLeft > 0
+                    ? `<div class="countdown">Expires in: ${days}d ${hours}h ${minutes}m ${seconds}s</div>`
+                    : `<div class="countdown">Expired</div>`;
 
-            const renderListings = (listings) => {
-                rentalListings.innerHTML = '';
-                if (!listings.length) {
-                    rentalListings.innerHTML = `<div class="col-span-full text-center p-10 bg-white rounded-xl shadow"><p class="text-xl text-gray-600">No rentals available.</p></div>`;
-                    return;
-                }
-
-                const lastId = localStorage.getItem('lastListedItemId');
-
-                listings.forEach(item => {
-                    if (!item || !item.id) return;
-
-                    const card = document.createElement('div');
-                    card.className = `rental-card scroll-animate bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition ${item.id == lastId ? 'highlight-card' : ''}`;
-                    card.dataset.category = categoryMap[item.type] || 'Other';
-                    card.dataset.search = `${item.name} ${item.ownerPhone} ${item.city} ${item.pincode}`.toLowerCase();
-
-                    card.innerHTML = `
-                        <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover">
-                        <div class="p-5 space-y-2">
-                            <h3 class="text-lg font-bold text-gray-900 truncate">${item.name}</h3>
-                            <p class="text-sm text-gray-600">
-                                <strong>Phone:</strong> 
-                                <a href="tel:${item.ownerPhone}" class="text-blue-600 hover:underline">${item.ownerPhone}</a>
-                            </p>
-                            <p class="text-sm text-gray-600">
-                                <strong>Location:</strong> ${item.city}, ${item.pincode}
-                            </p>
-                            <div class="flex justify-between items-center pt-2 border-t">
-                                <p class="text-xl font-bold text-blue-700">₹${item.price}<span class="text-sm font-normal text-gray-500">/day</span></p>
-                                <button class="view-details-btn text-blue-600 text-sm font-medium hover:underline">View Details</button>
-                            </div>
+                card.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover">
+                    <div class="p-5 space-y-2">
+                        <h3 class="text-lg font-bold text-gray-900 truncate">${item.name}</h3>
+                        <p class="text-sm text-gray-600">
+                            <strong>Phone:</strong> 
+                            <a href="tel:${item.ownerPhone}" class="text-blue-600 hover:underline">${item.ownerPhone}</a>
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <strong>Location:</strong> ${item.city}, ${item.pincode}
+                        </p>
+                        ${countdownHTML}
+                        <div class="flex justify-between items-center pt-2 border-t">
+                            <p class="text-xl font-bold text-blue-700">₹${item.price}<span class="text-sm font-normal text-gray-500">/day</span></p>
+                            <button onclick="deleteItem('${item.id}', '${item.deletePassword}')" class="text-red-600 text-sm font-medium hover:underline">Remove</button>
                         </div>
-                    `;
-
-                    card.querySelector('.view-details-btn').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        openDetailModal(item);
-                    });
-                    card.addEventListener('click', () => openDetailModal(item));
-                    rentalListings.appendChild(card);
-                });
-
-                if (lastId) {
-                    setTimeout(() => {
-                        const el = document.querySelector('.highlight-card');
-                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        localStorage.removeItem('lastListedItemId');
-                    }, 600);
-                }
-
-                setupScrollAnimation();
-            };
-
-            const openDetailModal = (item) => {
-                currentItem = item;
-                modalTitle.textContent = item.name;
-                modalImage.src = item.image;
-                modalDetails.innerHTML = `
-                    <p><strong>Owner:</strong> ${item.ownerName}</p>
-                    <p><strong>Phone:</strong> <a href="tel:${item.ownerPhone}" class="text-blue-600 hover:underline">${item.ownerPhone}</a></p>
-                    <p><strong>Email:</strong> <a href="mailto:${item.ownerEmail}" class="text-blue-600 hover:underline">${item.ownerEmail}</a></p>
-                    <p><strong>Location:</strong> ${item.city}, ${item.pincode}</p>
-                    <p><strong>Description:</strong> ${item.description}</p>
-                    <p><strong>Listed:</strong> ${new Date(item.timestamp).toLocaleDateString()}</p>
+                    </div>
                 `;
 
-                removeBtn.onclick = () => openDeleteModal(item.id, item.deletePassword);
-                detailModal.classList.add('show');
-            };
+                container.appendChild(card);
+            });
 
-            const openDeleteModal = (id, correctPass) => {
-                if (lockoutUntil > Date.now()) {
-                    const sec = Math.ceil((lockoutUntil - Date.now()) / 1000);
-                    errorMsg.textContent = `Try again in ${sec}s`;
-                    errorMsg.classList.remove('hidden');
+            if (lastId) {
+                setTimeout(() => {
+                    const el = document.querySelector('.highlight-card');
+                    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    localStorage.removeItem('lastListedItemId');
+                }, 500);
+            }
+
+            setupScrollAnimation();
+            updateCountdowns(); // Start live timer
+        };
+
+        // Live countdown update every second
+        const updateCountdowns = () => {
+            const now = getIndianTime().getTime();
+            document.querySelectorAll('.countdown').forEach(el => {
+                const card = el.closest('[data-id]');
+                if (!card) return;
+                const id = card.dataset.id;
+                const listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
+                const item = listings.find(i => i.id == id);
+                if (!item) return;
+
+                const timeLeft = item.timestamp + (7 * 24 * 60 * 60 * 1000) - now;
+                if (timeLeft <= 0) {
+                    el.innerHTML = 'Expired';
+                    card.classList.add('expired');
                     return;
                 }
 
-                currentItem = { id, correctPass };
-                attempts = 0;
-                deleteModal.classList.add('show');
-                deletePassword.value = '';
-                errorMsg.classList.add('hidden');
-                lockoutMsg.classList.add('hidden');
-                deletePassword.focus();
-            };
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-            confirmDelete.onclick = () => {
-                const input = deletePassword.value.trim();
-                if (!/^\d{6}$/.test(input)) {
-                    errorMsg.textContent = 'Enter 6 digits';
-                    errorMsg.classList.remove('hidden');
-                    return;
-                }
+                el.innerHTML = `Expires in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+            });
 
-                if (input === currentItem.correctPass) {
-                    let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
-                    listings = listings.filter(i => i.id != currentItem.id);
-                    localStorage.setItem('kirayaListings', JSON.stringify(listings));
-                    deleteModal.classList.remove('show');
-                    detailModal.classList.remove('show');
-                    loadListings();
-                } else {
-                    attempts++;
-                    if (attempts >= 3) {
-                        lockoutUntil = Date.now() + 30000;
-                        startLockout();
-                    } else {
-                        errorMsg.textContent = `Wrong password! (${3 - attempts} left)`;
-                        errorMsg.classList.remove('hidden');
-                        deletePassword.value = '';
+            setTimeout(updateCountdowns, 1000);
+        };
+
+        window.deleteItem = (id, correctPass) => {
+            const pass = prompt('Enter 6-digit delete password:');
+            if (pass === correctPass) {
+                let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
+                listings = listings.filter(i => i.id != id);
+                localStorage.setItem('kirayaListings', JSON.stringify(listings));
+                loadListings();
+            } else {
+                alert('Wrong password!');
+            }
+        };
+
+        const setupScrollAnimation = () => {
+            const obs = new IntersectionObserver(es => {
+                es.forEach(e => {
+                    if (e.isIntersecting) {
+                        setTimeout(() => e.target.classList.add('show'), 50);
+                        obs.unobserve(e.target);
                     }
-                }
-            };
-
-            const startLockout = () => {
-                deleteModal.classList.add('pointer-events-none', 'opacity-60');
-                lockoutMsg.classList.remove('hidden');
-                errorMsg.classList.add('hidden');
-
-                const interval = setInterval(() => {
-                    const sec = Math.ceil((lockoutUntil - Date.now()) / 1000);
-                    countdownSpan.textContent = sec > 0 ? sec : 0;
-                    if (sec <= 0) {
-                        clearInterval(interval);
-                        deleteModal.classList.remove('pointer-events-none', 'opacity-60');
-                        lockoutMsg.classList.add('hidden');
-                        attempts = 0;
-                    }
-                }, 1000);
-            };
-
-            // Close modals
-            [document.getElementById('closeDetail'), cancelDelete].forEach(btn => {
-                btn.onclick = () => {
-                    detailModal.classList.remove('show');
-                    deleteModal.classList.remove('show');
-                };
-            });
-
-            [detailModal, deleteModal].forEach(m => m.addEventListener('click', e => {
-                if (e.target === m) m.classList.remove('show');
-            }));
-
-            // Search
-            document.getElementById('search-input').addEventListener('input', () => {
-                const q = document.getElementById('search-input').value.toLowerCase();
-                document.querySelectorAll('.rental-card').forEach(c => {
-                    c.style.display = c.dataset.search.includes(q) ? 'block' : 'none';
                 });
-            });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.scroll-animate').forEach(c => obs.observe(c));
+        };
 
-            // Filter
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const cat = btn.dataset.category;
-                    document.querySelectorAll('.category-btn').forEach(b => {
-                        b.classList.remove('bg-blue-700', 'text-white');
-                        b.classList.add('bg-white', 'text-gray-700', 'border', 'border-gray-300');
-                    });
-                    btn.classList.add('bg-blue-700', 'text-white');
-                    btn.classList.remove('bg-white', 'text-gray-700', 'border');
-
-                    document.querySelectorAll('.rental-card').forEach(c => {
-                        c.style.display = (cat === 'All' || c.dataset.category === cat) ? 'block' : 'none';
-                    });
-                });
-            });
-
-            // Animation
-            const setupScrollAnimation = () => {
-                const obs = new IntersectionObserver(es => {
-                    es.forEach(e => {
-                        if (e.isIntersecting) {
-                            setTimeout(() => e.target.classList.add('show'), 50);
-                            obs.unobserve(e.target);
-                        }
-                    });
-                }, { threshold: 0.1 });
-                document.querySelectorAll('.rental-card').forEach(c => obs.observe(c));
-            };
-
-            loadListings();
-        });
+        // Load on start
+        loadListings();
     </script>
 </body>
 </html>
