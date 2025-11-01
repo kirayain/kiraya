@@ -1,54 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kiraya | Browse Rentals</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
-        .scroll-animate { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
-        .scroll-animate.show { opacity: 1; transform: translateY(0); }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }
+        .kiraya-blue { background-color: #1a4d95; }
+        .kiraya-blue-text { color: #1a4d95; }
+        .kiraya-orange { background-color: #ff9900; }
+        .kiraya-orange-text { color: #ff9900; }
+
+        .fade-in-section {
+            opacity: 0; transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible { opacity: 1; transform: translateY(0); }
+
+        .card { background: white; border-radius: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.06); transition: all 0.3s; }
+        .card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
         .highlight-card { animation: glow 2s ease-in-out 2; border: 3px solid #10b981 !important; }
-        @keyframes glow { 0%, 100% { box-shadow: 0 0 15px #10b981; } 50% { box-shadow: 0 0 30px #10b981; } }
-        .countdown { font-size: 0.875rem; font-weight: 600; color: #dc2626; }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 20px #10b981; } 50% { box-shadow: 0 0 35px #10b981; } }
+
+        .countdown {
+            background: #fee2e2; color: #dc2626; font-weight: 700;
+            padding: 10px 16px; border-radius: 12px; text-align: center;
+            margin: 12px 0; font-size: 1.1rem; border: 1px solid #fecaca;
+        }
         .expired { opacity: 0.5; pointer-events: none; }
+        .expired .countdown { background: #f3f4f6; color: #6b7280; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col">
 
-    <header class="bg-white shadow-lg sticky top-0 z-20">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="text-3xl font-bold text-blue-700">Kiraya</div>
-            <a href="index.html" class="text-blue-600 hover:underline">Home</a>
+    <!-- Navigation -->
+    <header class="bg-white shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="index.html" class="flex items-center">
+                    <span class="text-3xl font-extrabold kiraya-blue-text">Kiraya</span>
+                    <span class="text-3xl font-extrabold kiraya-orange-text">.</span>
+                </a>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="browse.html" class="text-gray-900 font-bold border-b-2 border-kiraya-blue pb-1">Browse</a>
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">Back to Home</a>
+                    <a href="list.html" class="kiraya-blue text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-opacity-90">List an Item</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-50">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="browse.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Browse Rentals</a>
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Back to Home</a>
+                <a href="list.html" class="block w-full text-center kiraya-blue text-white px-3 py-2 rounded-full font-semibold mt-2">List an Item</a>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold text-center mb-8">Browse Rentals</h1>
-        <div id="rental-listings" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <!-- Cards injected here -->
+    <!-- Main -->
+    <main class="flex-grow py-12 fade-in-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl sm:text-5xl font-extrabold kiraya-blue-text mb-3">Browse Rentals</h1>
+                <p class="text-lg text-gray-600">Find cars, gadgets, and more — all in one place.</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg mb-10">
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Search</label>
+                        <input type="text" id="search-input" placeholder="Name, phone, city..."
+                               class="w-full px-5 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-kiraya-blue focus:border-kiraya-blue">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Price per Day</label>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-medium text-gray-600">₹0</span>
+                            <input type="range" id="price-range" min="0" max="5000" value="5000" step="100" class="flex-1 h-2 rounded-lg appearance-none cursor-pointer bg-gray-200">
+                            <span id="price-value" class="text-sm font-medium text-gray-700">₹5000+</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="category-btn px-4 py-2 text-sm font-bold rounded-full bg-kiraya-blue text-white" data-category="All">All</button>
+                            <button class="category-btn px-4 py-2 text-sm font-bold rounded-full bg-gray-100 text-gray-700 border" data-category="Vehicles">Vehicles</button>
+                            <button class="category-btn px-4 py-2 text-sm font-bold rounded-full bg-gray-100 text-gray-700 border" data-category="Entertainment">Entertainment</button>
+                            <button class="category-btn px-4 py-2 text-sm font-bold rounded-full bg-gray-100 text-gray-700 border" data-category="Property">Property</button>
+                            <button class="category-btn px-4 py-2 text-sm font-bold rounded-full bg-gray-100 text-gray-700 border" data-category="Other">Other</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid -->
+            <section id="rental-listings" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Listings injected here -->
+            </section>
         </div>
     </main>
 
+    <!-- Footer -->
+    <footer class="kiraya-blue text-white py-8 mt-auto shadow-inner">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="mb-2">
+                <span class="text-2xl font-extrabold">Kiraya</span>
+                <span class="text-2xl font-extrabold kiraya-orange-text">.</span>
+            </div>
+            <p class="text-sm text-gray-300 mt-1">© 2025 Kiraya. Made in India.</p>
+        </div>
+    </footer>
+
     <script>
-        // Indian Time (IST) = UTC + 5:30
+        // Mobile Menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Indian Time
         const getIndianTime = () => {
             const now = new Date();
             const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
             return new Date(utc + (5.5 * 3600000));
         };
 
+        const categoryMap = { car: 'Vehicles', bike: 'Vehicles', house: 'Property', games: 'Entertainment', other: 'Other' };
+
         const loadListings = () => {
             let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
             const now = getIndianTime().getTime();
             const oneWeekAgo = now - (7 * 24 * 60 * 60 * 1000);
-
-            // Remove expired
             listings = listings.filter(i => i.timestamp >= oneWeekAgo);
             localStorage.setItem('kirayaListings', JSON.stringify(listings));
-
             renderListings(listings, now);
         };
 
@@ -56,7 +150,7 @@
             const container = document.getElementById('rental-listings');
             container.innerHTML = '';
             if (!listings.length) {
-                container.innerHTML = `<div class="col-span-full text-center p-10 bg-white rounded-xl shadow"><p class="text-xl text-gray-600">No rentals available.</p></div>`;
+                container.innerHTML = `<div class="col-span-full text-center p-16 bg-white rounded-2xl shadow"><p class="text-xl text-gray-500">No active listings. <a href="list.html" class="kiraya-blue-text underline">List yours now!</a></p></div>`;
                 return;
             }
 
@@ -67,33 +161,31 @@
                 const timeLeft = expiryTime - now;
 
                 const card = document.createElement('div');
-                card.className = `scroll-animate bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition ${item.id == lastId ? 'highlight-card' : ''} ${timeLeft <= 0 ? 'expired' : ''}`;
+                card.className = `card ${item.id == lastId ? 'highlight-card' : ''} ${timeLeft <= 0 ? 'expired' : ''}`;
+                card.dataset.category = categoryMap[item.type] || 'Other';
+                card.dataset.search = `${item.name} ${item.ownerPhone} ${item.city} ${item.pincode}`.toLowerCase();
+                card.dataset.price = item.price;
                 card.dataset.id = item.id;
 
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                const days = Math.floor(timeLeft / 86400000);
+                const hours = Math.floor((timeLeft % 86400000) / 3600000);
+                const minutes = Math.floor((timeLeft % 3600000) / 60000);
+                const seconds = Math.floor((timeLeft % 60000) / 1000);
 
                 const countdownHTML = timeLeft > 0
-                    ? `<div class="countdown">Expires in: ${days}d ${hours}h ${minutes}m ${seconds}s</div>`
+                    ? `<div class="countdown">Expires in: <strong>${days}d ${hours}h ${minutes}m ${seconds}s</strong></div>`
                     : `<div class="countdown">Expired</div>`;
 
                 card.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover">
-                    <div class="p-5 space-y-2">
-                        <h3 class="text-lg font-bold text-gray-900 truncate">${item.name}</h3>
-                        <p class="text-sm text-gray-600">
-                            <strong>Phone:</strong> 
-                            <a href="tel:${item.ownerPhone}" class="text-blue-600 hover:underline">${item.ownerPhone}</a>
-                        </p>
-                        <p class="text-sm text-gray-600">
-                            <strong>Location:</strong> ${item.city}, ${item.pincode}
-                        </p>
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover rounded-t-2xl">
+                    <div class="p-6 space-y-3">
+                        <h3 class="text-xl font-bold text-gray-900 truncate">${item.name}</h3>
+                        <p class="text-sm text-gray-600"><strong>Phone:</strong> <a href="tel:${item.ownerPhone}" class="kiraya-blue-text hover:underline">${item.ownerPhone}</a></p>
+                        <p class="text-sm text-gray-600"><strong>Location:</strong> ${item.city}, ${item.pincode}</p>
                         ${countdownHTML}
-                        <div class="flex justify-between items-center pt-2 border-t">
-                            <p class="text-xl font-bold text-blue-700">₹${item.price}<span class="text-sm font-normal text-gray-500">/day</span></p>
-                            <button onclick="deleteItem('${item.id}', '${item.deletePassword}')" class="text-red-600 text-sm font-medium hover:underline">Remove</button>
+                        <div class="flex justify-between items-center pt-3 border-t">
+                            <p class="text-2xl font-bold kiraya-blue-text">₹${item.price}<span class="text-sm font-normal text-gray-500">/day</span></p>
+                            <button onclick="deleteItem('${item.id}', '${item.deletePassword}')" class="text-red-600 font-medium hover:underline text-sm">Remove</button>
                         </div>
                     </div>
                 `;
@@ -106,14 +198,14 @@
                     const el = document.querySelector('.highlight-card');
                     el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     localStorage.removeItem('lastListedItemId');
-                }, 500);
+                }, 600);
             }
 
+            setupFilters();
+            updateCountdowns();
             setupScrollAnimation();
-            updateCountdowns(); // Start live timer
         };
 
-        // Live countdown update every second
         const updateCountdowns = () => {
             const now = getIndianTime().getTime();
             document.querySelectorAll('.countdown').forEach(el => {
@@ -131,19 +223,63 @@
                     return;
                 }
 
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                const days = Math.floor(timeLeft / 86400000);
+                const hours = Math.floor((timeLeft % 86400000) / 3600000);
+                const minutes = Math.floor((timeLeft % 3600000) / 60000);
+                const seconds = Math.floor((timeLeft % 60000) / 1000);
 
-                el.innerHTML = `Expires in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+                el.innerHTML = `Expires in: <strong>${days}d ${hours}h ${minutes}m ${seconds}s</strong>`;
+            });
+            setTimeout(updateCountdowns, 1000);
+        };
+
+        const setupFilters = () => {
+            const searchInput = document.getElementById('search-input');
+            const priceRange = document.getElementById('price-range');
+            const priceValue = document.getElementById('price-value');
+            const categoryBtns = document.querySelectorAll('.category-btn');
+
+            const filter = () => {
+                const query = searchInput.value.toLowerCase();
+                const maxPrice = parseInt(priceRange.value);
+                const activeCat = document.querySelector('.category-btn.bg-kiraya-blue')?.dataset.category || 'All';
+
+                document.querySelectorAll('.card').forEach(card => {
+                    const matchesSearch = card.dataset.search.includes(query);
+                    const price = parseInt(card.dataset.price);
+                    const matchesPrice = price <= maxPrice;
+                    const matchesCat = activeCat === 'All' || card.dataset.category === activeCat;
+
+                    card.style.display = (matchesSearch && matchesPrice && matchesCat) ? 'block' : 'none';
+                });
+            };
+
+            priceRange.addEventListener('input', () => {
+                const val = priceRange.value;
+                priceValue.textContent = val >= 5000 ? '₹5000+' : `₹${val}`;
+                filter();
             });
 
-            setTimeout(updateCountdowns, 1000);
+            searchInput.addEventListener('input', filter);
+
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    categoryBtns.forEach(b => {
+                        b.classList.remove('bg-kiraya-blue', 'text-white');
+                        b.classList.add('bg-gray-100', 'text-gray-700', 'border');
+                    });
+                    btn.classList.add('bg-kiraya-blue', 'text-white');
+                    btn.classList.remove('bg-gray-100', 'text-gray-700', 'border');
+                    filter();
+                });
+            });
+
+            filter();
         };
 
         window.deleteItem = (id, correctPass) => {
             const pass = prompt('Enter 6-digit delete password:');
+            if (!pass || pass.length !== 6) return alert('Enter 6 digits');
             if (pass === correctPass) {
                 let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
                 listings = listings.filter(i => i.id != id);
@@ -158,15 +294,14 @@
             const obs = new IntersectionObserver(es => {
                 es.forEach(e => {
                     if (e.isIntersecting) {
-                        setTimeout(() => e.target.classList.add('show'), 50);
+                        setTimeout(() => e.target.classList.add('is-visible'), 50);
                         obs.unobserve(e.target);
                     }
                 });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.scroll-animate').forEach(c => obs.observe(c));
+            }, { threshold: 0.15 });
+            document.querySelectorAll('.fade-in-section').forEach(c => obs.observe(c));
         };
 
-        // Load on start
         loadListings();
     </script>
 </body>
