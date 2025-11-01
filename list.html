@@ -1,66 +1,194 @@
 <!DOCTYPE html>
-<html lang="en-IN">
+<html lang="en-IN" class="scroll-smooth">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>List Item | Kiraya</title>
+    <title>List Your Item | Kiraya</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
-        .form-animate { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
-        .form-animate.show { opacity: 1; transform: translateY(0); }
-        .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transform: translateX(120%); transition: transform 0.4s ease; z-index: 1000; font-weight: 600; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }
+        .kiraya-blue { background-color: #1a4d95; }
+        .kiraya-blue-text { color: #1a4d95; }
+        .kiraya-orange { background-color: #ff9900; }
+        .kiraya-orange-text { color: #ff9900; }
+
+        .fade-in-section {
+            opacity: 0; transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible { opacity: 1; transform: translateY(0); }
+
+        .input-focus:focus {
+            outline: none; border-color: #1a4d95; ring: 2px solid #1a4d95;
+        }
+        .btn-primary {
+            background-color: #1a4d95; transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #163d7a; transform: translateY(-1px);
+        }
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: #10b981; color: white; padding: 16px 28px;
+            border-radius: 12px; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            transform: translateX(120%); transition: transform 0.4s ease;
+            z-index: 1000; font-weight: 600;
+        }
         .toast.show { transform: translateX(0); }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col">
 
-    <header class="bg-white shadow-lg sticky top-0 z-20">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="index.html" class="text-3xl font-bold text-blue-700">Kiraya</a>
-            <a href="browse.html" class="text-blue-600 hover:underline">Browse</a>
+    <!-- Navigation -->
+    <header class="bg-white shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="index.html" class="flex items-center">
+                    <span class="text-3xl font-extrabold kiraya-blue-text">Kiraya</span>
+                    <span class="text-3xl font-extrabold kiraya-orange-text">.</span>
+                </a>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="browse.html" class="text-gray-600 hover:text-gray-900 font-medium">Browse</a>
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">Back to Home</a>
+                    <a href="list.html" class="kiraya-blue text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-opacity-90">List an Item</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-50">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="browse.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Browse Rentals</a>
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Back to Home</a>
+                <a href="list.html" class="block w-full text-center kiraya-blue text-white px-3 py-2 rounded-full font-semibold mt-2">List an Item</a>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-3xl mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold text-center mb-8 form-animate">List Your Item (1 per phone)</h1>
-
-        <form id="listingForm" class="bg-white p-8 rounded-2xl shadow-xl space-y-6 form-animate">
-            <div>
-                <label class="block text-sm font-semibold mb-2">Phone Number *</label>
-                <input type="tel" id="ownerPhone" required pattern="[0-9]{10}" placeholder="9876543210" class="w-full px-4 py-3 border rounded-xl">
-                <p class="text-xs text-red-600 mt-1">Only 1 listing allowed per phone</p>
+    <!-- Main -->
+    <main class="flex-grow py-12 fade-in-section">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <h1 class="text-4xl sm:text-5xl font-extrabold kiraya-blue-text mb-3">List Your Item</h1>
+                <p class="text-lg text-gray-600">Only <strong>1 listing per phone number</strong> allowed.</p>
             </div>
 
-            <input type="text" id="ownerName" required placeholder="Your Name" class="w-full px-4 py-3 border rounded-xl">
-            <input type="email" id="ownerEmail" required placeholder="Email" class="w-full px-4 py-3 border rounded-xl">
-            <input type="text" id="city" required placeholder="City" class="w-full px-4 py-3 border rounded-xl">
-            <input type="text" id="pincode" required pattern="[0-9]{6}" placeholder="Pincode" class="w-full px-4 py-3 border rounded-xl">
-            <select id="itemType" required class="w-full px-4 py-3 border rounded-xl">
-                <option value="">Item Type</option>
-                <option value="car">Car</option>
-                <option value="bike">Bike</option>
-                <option value="house">House</option>
-                <option value="games">Games</option>
-                <option value="other">Other</option>
-            </select>
-            <input type="text" id="itemName" required placeholder="Item Name" class="w-full px-4 py-3 border rounded-xl">
-            <textarea id="description" rows="3" required placeholder="Description" class="w-full px-4 py-3 border rounded-xl"></textarea>
-            <input type="number" id="price" required min="50" placeholder="Price per day (₹)" class="w-full px-4 py-3 border rounded-xl">
-            <input type="file" id="itemImage" accept="image/*" required class="block w-full text-sm file:mr-4 file:py-3 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700">
-            <img id="imagePreview" src="" alt="" class="mt-3 w-full max-w-xs h-48 object-cover rounded-xl hidden">
+            <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+                <form id="listingForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+                        <input type="tel" id="ownerPhone" required pattern="[0-9]{10}" placeholder="9876543210"
+                               class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus transition text-lg">
+                        <p class="text-xs text-red-600 mt-1">Only 1 listing allowed per phone.</p>
+                    </div>
 
-            <input type="password" id="deletePassword" required pattern="[0-9]{6}" maxlength="6" placeholder="6-Digit Delete Password" class="w-full px-4 py-3 border rounded-xl">
-            <p class="text-xs text-red-600">Required to remove listing later</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Your Name *</label>
+                            <input type="text" id="ownerName" required placeholder="John Doe"
+                                   class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                            <input type="email" id="ownerEmail" required placeholder="john@example.com"
+                                   class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                        </div>
+                    </div>
 
-            <button type="submit" class="w-full bg-blue-700 text-white py-4 rounded-xl font-bold text-lg">List Item</button>
-        </form>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">City *</label>
+                            <input type="text" id="city" required placeholder="Mumbai"
+                                   class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Pincode *</label>
+                            <input type="text" id="pincode" required pattern="[0-9]{6}" placeholder="400001"
+                                   class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Item Type *</label>
+                            <select id="itemType" required class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                                <option value="">Select type</option>
+                                <option value="car">Car</option>
+                                <option value="bike">Bike</option>
+                                <option value="house">House</option>
+                                <option value="games">Games</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Item Name *</label>
+                            <input type="text" id="itemName" required placeholder="PS5, iPhone 15"
+                                   class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                        <textarea id="description" rows="3" required placeholder="Well-maintained, full insurance..."
+                                  class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus resize-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Price per Day (₹) *</label>
+                        <input type="number" id="price" required min="50" placeholder="500"
+                               class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Upload Image *</label>
+                        <input type="file" id="itemImage" accept="image/*" required
+                               class="block w-full text-sm file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700">
+                        <img id="imagePreview" src="" alt="" class="mt-4 w-full max-w-md h-64 object-cover rounded-xl shadow-md hidden">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">6-Digit Delete Password *</label>
+                        <input type="password" id="deletePassword" required pattern="[0-9]{6}" maxlength="6" placeholder="123456"
+                               class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus text-center font-mono text-lg">
+                        <p class="text-xs text-red-600 mt-1">Required to remove listing later.</p>
+                    </div>
+
+                    <button type="submit" class="w-full kiraya-blue text-white py-4 rounded-xl font-bold text-lg btn-primary shadow-lg">
+                        List Item Now
+                    </button>
+                </form>
+            </div>
+        </div>
     </main>
 
-    <div id="toast" class="toast">Success! Redirecting...</div>
+    <!-- Toast -->
+    <div id="toast" class="toast">Listing created! Redirecting...</div>
+
+    <!-- Footer -->
+    <footer class="kiraya-blue text-white py-8 mt-auto shadow-inner">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="mb-2">
+                <span class="text-2xl font-extrabold">Kiraya</span>
+                <span class="text-2xl font-extrabold kiraya-orange-text">.</span>
+            </div>
+            <p class="text-sm text-gray-300 mt-1">© 2025 Kiraya. Made in India.</p>
+        </div>
+    </footer>
 
     <script>
+        // Mobile Menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Form Submit
         document.getElementById('listingForm').onsubmit = (e) => {
             e.preventDefault();
             const phone = document.getElementById('ownerPhone').value.trim();
@@ -72,7 +200,7 @@
             }
 
             const file = document.getElementById('itemImage').files[0];
-            if (!file) return alert('Upload image');
+            if (!file) return alert('Upload an image');
 
             const reader = new FileReader();
             reader.onload = () => {
@@ -97,11 +225,12 @@
                 localStorage.setItem('lastListedItemId', item.id);
 
                 document.getElementById('toast').classList.add('show');
-                setTimeout(() => location.href = 'browse.html', 1500);
+                setTimeout(() => location.href = 'browse.html', 1800);
             };
             reader.readAsDataURL(file);
         };
 
+        // Image Preview
         document.getElementById('itemImage').onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -115,9 +244,16 @@
             }
         };
 
-        setTimeout(() => document.querySelectorAll('.form-animate').forEach((el, i) => {
-            setTimeout(() => el.classList.add('show'), i * 100);
-        }), 100);
+        // Scroll Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.fade-in-section').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
