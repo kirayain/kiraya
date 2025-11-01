@@ -1,48 +1,109 @@
 <!DOCTYPE html>
-<html lang="en-IN" class="scroll-smooth">
+<html lang="en-IN" prefix="og: https://ogp.me/ns#">
 <head>
+    <!-- Essential Meta -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>List Your Item | Kiraya</title>
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#1a4d95" />
+    <meta name="format-detection" content="telephone=yes" />
+
+    <!-- SEO Title & Description -->
+    <title>List Your Item for Rent | Kiraya - Rent Car, Bike, House, PS5 in Mumbai, Delhi, Bangalore</title>
+    <meta name="description" content="List your car, bike, house, PS5, iPhone, camera for rent in 2 minutes. Only 1 listing per phone. Auto-expires in 7 days. Mumbai, Delhi, Bangalore, Chennai, Hyderabad, Pune." />
+
+    <!-- High-Intent SEO Keywords -->
+    <meta name="keywords" content="
+        list car for rent, list bike for rent, list house for rent, list PS5 for rent, list iPhone for rent,
+        rent out my car, rent out my bike, rent out my house, rent out gadgets, 
+        list item for rent near me, list rental Mumbai, list rental Delhi, list rental Bangalore,
+        how to list rental online, free rental listing, peer to peer rental listing,
+        list car without agent, list bike without documents, list house daily rent,
+        list PS5 for rent India, list camera for rent, list laptop for rent
+    " />
+
+    <!-- Author & Geo -->
+    <meta name="author" content="Kiraya - Local Rental Platform" />
+    <meta name="language" content="English" />
+    <meta name="geo.region" content="IN" />
+    <meta name="geo.placename" content="India" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="List Your Item for Rent | Kiraya - Mumbai, Delhi, Bangalore" />
+    <meta property="og:description" content="List car, bike, house, PS5, iPhone in 2 mins. Only 1 listing per phone. Auto-expires in 7 days." />
+    <meta property="og:image" content="https://yourdomain.com/og-list.jpg" />
+    <meta property="og:image:alt" content="List your item on Kiraya" />
+    <meta property="og:url" content="https://yourdomain.com/list.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="List Your Item | Kiraya" />
+    <meta name="twitter:description" content="List in 2 mins. Only 1 per phone. Auto-expires in 7 days." />
+    <meta name="twitter:image" content="https://yourdomain.com/og-list.jpg" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://yourdomain.com/list.html" />
+
+    <!-- Preload Critical Resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" as="style" />
+
+    <!-- Tailwind + Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "List Your Rental Item",
+      "description": "List your car, bike, house, PS5, iPhone for rent in 2 minutes. Only 1 listing per phone.",
+      "url": "https://yourdomain.com/list.html",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://yourdomain.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "List Item"
+          }
+        ]
+      }
+    }
+    </script>
+
+    <!-- Inline Critical CSS -->
     <style>
         html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }
-        .kiraya-blue { background-color: #1a4d95; }
-        .kiraya-blue-text { color: #1a4d95; }
-        .kiraya-orange { background-color: #ff9900; }
-        .kiraya-orange-text { color: #ff9900; }
-
-        .fade-in-section {
-            opacity: 0; transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; margin: 0; }
+        .kiraya-blue { @apply bg-blue-700; }
+        .kiraya-blue-text { @apply text-blue-700; }
+        .kiraya-orange-text { @apply text-orange-500; }
+        .fade-in-section { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
         .fade-in-section.is-visible { opacity: 1; transform: translateY(0); }
-
-        .input-focus:focus {
-            outline: none; border-color: #1a4d95; ring: 2px solid #1a4d95;
-        }
-        .btn-primary {
-            background-color: #1a4d95; transition: all 0.3s;
-        }
-        .btn-primary:hover {
-            background-color: #163d7a; transform: translateY(-1px);
-        }
-        .toast {
-            position: fixed; bottom: 24px; right: 24px;
-            background: #10b981; color: white; padding: 16px 28px;
-            border-radius: 12px; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-            transform: translateX(120%); transition: transform 0.4s ease;
-            z-index: 1000; font-weight: 600;
-        }
+        .input-focus:focus { outline: none; border-color: #1a4d95; box-shadow: 0 0 0 3px rgba(26, 77, 149, 0.2); }
+        .btn-primary { @apply bg-blue-700 text-white font-bold py-4 px-8 rounded-xl hover:bg-blue-800 transition shadow-lg; }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: #10b981; color: white; padding: 16px 28px; border-radius: 12px; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); transform: translateX(120%); transition: transform 0.4s ease; z-index: 1000; font-weight: 600; }
         .toast.show { transform: translateX(0); }
+        .form-label { @apply block text-sm font-semibold text-gray-700 mb-2; }
+        .form-input { @apply w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus transition text-lg; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- Navigation -->
-    <header class="bg-white shadow-lg sticky top-0 z-10">
+    <header class="bg-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <a href="index.html" class="flex items-center">
@@ -50,8 +111,8 @@
                     <span class="text-3xl font-extrabold kiraya-orange-text">.</span>
                 </a>
                 <nav class="hidden md:flex space-x-8">
-                    <a href="browse.html" class="text-gray-600 hover:text-gray-900 font-medium">Browse</a>
-                    <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">Back to Home</a>
+                    <a href="browse.html" class="text-gray-600 hover:text-gray-900 font-medium">Browse Rentals</a>
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">Home</a>
                     <a href="list.html" class="kiraya-blue text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-opacity-90">List an Item</a>
                 </nav>
                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
@@ -64,133 +125,192 @@
         <div id="mobile-menu" class="hidden md:hidden bg-gray-50">
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <a href="browse.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Browse Rentals</a>
-                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Back to Home</a>
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Home</a>
                 <a href="list.html" class="block w-full text-center kiraya-blue text-white px-3 py-2 rounded-full font-semibold mt-2">List an Item</a>
             </div>
         </div>
     </header>
 
-    <!-- Main -->
+    <!-- Breadcrumb (SEO + UX) -->
+    <nav class="bg-gray-50 py-3" aria-label="Breadcrumb">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                <li><a href="index.html" class="hover:text-kiraya-blue-text">Home</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li class="text-kiraya-blue-text font-medium" aria-current="page">List Your Item</li>
+            </ol>
+        </div>
+    </nav>
+
+    <!-- Hero CTA -->
+    <section class="py-12 px-4 bg-gradient-to-r from-blue-50 to-orange-50">
+        <div class="max-w-3xl mx-auto text-center">
+            <h1 class="text-4xl sm:text-5xl font-extrabold kiraya-blue-text mb-3 fade-in-section">
+                List Your Item for Rent in 2 Minutes
+            </h1>
+            <p class="text-lg text-gray-700 mb-6 fade-in-section">
+                Only <strong>1 listing per phone</strong>. Auto-expires in 7 days. No spam.
+            </p>
+            <p class="text-sm text-gray-600 fade-in-section">
+                Earn ₹500–₹5000/day by renting your car, bike, house, PS5, iPhone, camera, laptop.
+            </p>
+        </div>
+    </section>
+
+    <!-- Form -->
     <main class="flex-grow py-12 fade-in-section">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-10">
-                <h1 class="text-4xl sm:text-5xl font-extrabold kiraya-blue-text mb-3">List Your Item</h1>
-                <p class="text-lg text-gray-600">Only <strong>1 listing per phone number</strong> allowed.</p>
-            </div>
-
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
                 <form id="listingForm" class="space-y-6">
+                    <!-- Phone -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
-                        <input type="tel" id="ownerPhone" required pattern="[0-9]{10}" placeholder="9876543210"
-                               class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus transition text-lg">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" id="ownerPhone" required pattern="[0-9]{10}" placeholder="9876543210" class="form-input">
                         <p class="text-xs text-red-600 mt-1">Only 1 listing allowed per phone.</p>
                     </div>
 
+                    <!-- Name & Email -->
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Your Name *</label>
-                            <input type="text" id="ownerName" required placeholder="John Doe"
-                                   class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                            <label class="form-label">Your Name *</label>
+                            <input type="text" id="ownerName" required placeholder="John Doe" class="form-input">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
-                            <input type="email" id="ownerEmail" required placeholder="john@example.com"
-                                   class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                            <label class="form-label">Email *</label>
+                            <input type="email" id="ownerEmail" required placeholder="john@example.com" class="form-input">
                         </div>
                     </div>
 
+                    <!-- City & Pincode -->
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">City *</label>
-                            <input type="text" id="city" required placeholder="Mumbai"
-                                   class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                            <label class="form-label">City *</label>
+                            <input type="text" id="city" required placeholder="Mumbai" class="form-input">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Pincode *</label>
-                            <input type="text" id="pincode" required pattern="[0-9]{6}" placeholder="400001"
-                                   class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                            <label class="form-label">Pincode *</label>
+                            <input type="text" id="pincode" required pattern="[0-9]{6}" placeholder="400001" class="form-input">
                         </div>
                     </div>
 
+                    <!-- Item Type & Name -->
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Item Type *</label>
-                            <select id="itemType" required class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                            <label class="form-label">Item Type *</label>
+                            <select id="itemType" required class="form-input">
                                 <option value="">Select type</option>
                                 <option value="car">Car</option>
                                 <option value="bike">Bike</option>
                                 <option value="house">House</option>
-                                <option value="games">Games</option>
+                                <option value="games">PS5 / Games</option>
                                 <option value="other">Other</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Item Name *</label>
-                            <input type="text" id="itemName" required placeholder="PS5, iPhone 15"
-                                   class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                            <label class="form-label">Item Name *</label>
+                            <input type="text" id="itemName" required placeholder="Honda City, iPhone 15" class="form-input">
                         </div>
                     </div>
 
+                    <!-- Description -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
-                        <textarea id="description" rows="3" required placeholder="Well-maintained, full insurance..."
-                                  class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus resize-none"></textarea>
+                        <label class="form-label">Description *</label>
+                        <textarea id="description" rows="3" required placeholder="Well-maintained, full insurance, no deposit..." class="form-input resize-none"></textarea>
                     </div>
 
+                    <!-- Price -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Price per Day (₹) *</label>
-                        <input type="number" id="price" required min="50" placeholder="500"
-                               class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus">
+                        <label class="form-label">Price per Day (₹) *</label>
+                        <input type="number" id="price" required min="50" placeholder="500" class="form-input">
                     </div>
 
+                    <!-- Image -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Upload Image *</label>
-                        <input type="file" id="itemImage" accept="image/*" required
-                               class="block w-full text-sm file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700">
-                        <img id="imagePreview" src="" alt="" class="mt-4 w-full max-w-md h-64 object-cover rounded-xl shadow-md hidden">
+                        <label class="form-label">Upload Image *</label>
+                        <input type="file" id="itemImage" accept="image/*" required class="block w-full text-sm file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700">
+                        <img id="imagePreview" src="" alt="Item preview" class="mt-4 w-full max-w-md h-64 object-cover rounded-xl shadow-md hidden">
                     </div>
 
+                    <!-- Delete Password -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">6-Digit Delete Password *</label>
-                        <input type="password" id="deletePassword" required pattern="[0-9]{6}" maxlength="6" placeholder="123456"
-                               class="w-full px-5 py-3.5 border border-gray-300 rounded-xl input-focus text-center font-mono text-lg">
+                        <label class="form-label">6-Digit Delete Password *</label>
+                        <input type="password" id="deletePassword" required pattern="[0-9]{6}" maxlength="6" placeholder="123456" class="form-input text-center font-mono text-lg">
                         <p class="text-xs text-red-600 mt-1">Required to remove listing later.</p>
                     </div>
 
-                    <button type="submit" class="w-full kiraya-blue text-white py-4 rounded-xl font-bold text-lg btn-primary shadow-lg">
-                        List Item Now
+                    <!-- Submit -->
+                    <button type="submit" class="w-full btn-primary text-lg">
+                        List Item Now – Earn ₹500+/day
                     </button>
                 </form>
+            </div>
+
+            <!-- Trust Badges -->
+            <div class="mt-10 text-center fade-in-section">
+                <p class="text-sm text-gray-600">Trusted by 10,000+ users across India</p>
+                <div class="flex justify-center gap-8 mt-4">
+                    <div class="text-2xl">Secure</div>
+                    <div class="text-2xl">Fast</div>
+                    <div class="text-2xl">Local</div>
+                </div>
             </div>
         </div>
     </main>
 
     <!-- Toast -->
-    <div id="toast" class="toast">Listing created! Redirecting...</div>
+    <div id="toast" class="toast">Listing created! Redirecting to browse...</div>
 
     <!-- Footer -->
-    <footer class="kiraya-blue text-white py-8 mt-auto shadow-inner">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="mb-2">
-                <span class="text-2xl font-extrabold">Kiraya</span>
-                <span class="text-2xl font-extrabold kiraya-orange-text">.</span>
+    <footer class="bg-blue-700 text-white py-10 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="mb-4">
+                <span class="text-3xl font-extrabold">Kiraya</span>
+                <span class="text-3xl font-extrabold text-orange-500">.</span>
             </div>
-            <p class="text-sm text-gray-300 mt-1">© 2025 Kiraya. Made in India.</p>
+            <p class="text-sm mb-4">List locally. Earn globally. Made in India.</p>
+            <div class="flex justify-center gap-6 text-sm">
+                <a href="privacy.html" class="hover:underline">Privacy</a>
+                <a href="terms.html" class="hover:underline">Terms</a>
+                <a href="contact.html" class="hover:underline">Contact</a>
+            </div>
+            <p class="text-xs text-gray-300 mt-6">© 2025 Kiraya. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script>
+        // Clean expired listings
+        const cleanExpired = () => {
+            const listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
+            const now = Date.now();
+            const valid = listings.filter(i => i.timestamp + (7 * 24 * 60 * 60 * 1000) > now);
+            localStorage.setItem('kirayaListings', JSON.stringify(valid));
+        };
+        cleanExpired();
+
         // Mobile Menu
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
         });
 
-        // Form Submit
+        // Image Preview
+        document.getElementById('itemImage').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const prev = document.getElementById('imagePreview');
+                    prev.src = ev.target.result;
+                    prev.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // Submit Form
         document.getElementById('listingForm').onsubmit = (e) => {
             e.preventDefault();
+            cleanExpired();
             const phone = document.getElementById('ownerPhone').value.trim();
             if (!/^\d{10}$/.test(phone)) return alert('Enter valid 10-digit phone');
 
@@ -228,20 +348,6 @@
                 setTimeout(() => location.href = 'browse.html', 1800);
             };
             reader.readAsDataURL(file);
-        };
-
-        // Image Preview
-        document.getElementById('itemImage').onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const prev = document.getElementById('imagePreview');
-                    prev.src = ev.target.result;
-                    prev.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
         };
 
         // Scroll Animation
