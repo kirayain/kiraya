@@ -1,43 +1,124 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en-IN" prefix="og: https://ogp.me/ns#">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiraya | Browse Rentals</title>
+    <!-- Essential Meta -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#1a4d95" />
+    <meta name="format-detection" content="telephone=yes" />
+
+    <!-- SEO Title & Description -->
+    <title>Browse Rentals | Kiraya - Rent Car, Bike, House, PS5 in Mumbai, Delhi, Bangalore</title>
+    <meta name="description" content="Browse local rentals: cars, bikes, houses, PS5, iPhone, cameras. Filter by city, price, pincode. Auto-expiry in 7 days. Mumbai, Delhi, Bangalore, Chennai, Hyderabad, Pune." />
+
+    <!-- High-Intent SEO Keywords -->
+    <meta name="keywords" content="
+        browse car rental near me, browse bike rental, browse house for rent, browse PS5 rental,
+        rent car Mumbai, rent bike Delhi, rent house Bangalore, PS5 rental Chennai,
+        iPhone rental Hyderabad, camera rental Pune, laptop rental Kolkata,
+        local rental listings, daily rental near me, 7 day rental India,
+        peer to peer rental, rent from owner, no agent rental,
+        cheap car rental, cheap bike rental, cheap gadget rental
+    " />
+
+    <!-- Author & Geo -->
+    <meta name="author" content="Kiraya - Local Rental Platform" />
+    <meta name="language" content="English" />
+    <meta name="geo.region" content="IN" />
+    <meta name="geo.placename" content="India" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Browse Local Rentals | Kiraya - Mumbai, Delhi, Bangalore" />
+    <meta property="og:description" content="Cars, bikes, houses, PS5, iPhone. Filter by city, price, pincode. Auto-expiry in 7 days." />
+    <meta property="og:image" content="https://yourdomain.com/og-browse.jpg" />
+    <meta property="og:image:alt" content="Browse rentals on Kiraya" />
+    <meta property="og:url" content="https://yourdomain.com/browse.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Browse Rentals | Kiraya" />
+    <meta name="twitter:description" content="Cars, bikes, PS5, houses. Filter by city & price." />
+    <meta name="twitter:image" content="https://yourdomain.com/og-browse.jpg" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://yourdomain.com/browse.html" />
+
+    <!-- Preload Critical Resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" as="style" />
+
+    <!-- Tailwind + Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Local Rentals on Kiraya",
+      "description": "Browse cars, bikes, houses, PS5, iPhone for rent near you.",
+      "url": "https://yourdomain.com/browse.html",
+      "numberOfItems": 0,
+      "itemListElement": []
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Browse Rentals",
+      "description": "Filter and browse local rentals by city, price, and category.",
+      "url": "https://yourdomain.com/browse.html",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://yourdomain.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Browse Rentals"
+          }
+        ]
+      }
+    }
+    </script>
+
+    <!-- Inline Critical CSS -->
     <style>
         html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }
-        .kiraya-blue { background-color: #1a4d95; }
-        .kiraya-blue-text { color: #1a4d95; }
-        .kiraya-orange { background-color: #ff9900; }
-        .kiraya-orange-text { color: #ff9900; }
-
-        .fade-in-section {
-            opacity: 0; transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; margin: 0; }
+        .kiraya-blue { @apply bg-blue-700; }
+        .kiraya-blue-text { @apply text-blue-700; }
+        .kiraya-orange-text { @apply text-orange-500; }
+        .fade-in-section { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
         .fade-in-section.is-visible { opacity: 1; transform: translateY(0); }
-
-        .card { background: white; border-radius: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.06); transition: all 0.3s; }
-        .card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
-        .highlight-card { animation: glow 2s ease-in-out 2; border: 3px solid #10b981 !important; }
+        .card { @apply bg-white rounded-2xl shadow-lg transition hover:shadow-xl hover:-translate-y-1; }
+        .highlight-card { animation: glow 2s ease-in-out 2; border: 3px solid #10b981; }
         @keyframes glow { 0%, 100% { box-shadow: 0 0 20px #10b981; } 50% { box-shadow: 0 0 35px #10b981; } }
-
-        .countdown {
-            background: #fee2e2; color: #dc2626; font-weight: 700;
-            padding: 10px 16px; border-radius: 12px; text-align: center;
-            margin: 12px 0; font-size: 1.1rem; border: 1px solid #fecaca;
-        }
-        .expired { opacity: 0.5; pointer-events: none; }
-        .expired .countdown { background: #f3f4f6; color: #6b7280; }
+        .countdown { @apply bg-red-100 text-red-700 font-bold py-2 px-4 rounded-lg text-center text-sm; }
+        .expired { @apply opacity-50 pointer-events-none; }
+        .expired .countdown { @apply bg-gray-200 text-gray-600; }
+        .filter-btn { @apply px-4 py-2 text-sm font-bold rounded-full transition; }
+        .filter-btn.active { @apply bg-blue-700 text-white; }
+        .filter-btn.inactive { @apply bg-gray-100 text-gray-700 border; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- Navigation -->
-    <header class="bg-white shadow-lg sticky top-0 z-10">
+    <header class="bg-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <a href="index.html" class="flex items-center">
@@ -45,9 +126,9 @@
                     <span class="text-3xl font-extrabold kiraya-orange-text">.</span>
                 </a>
                 <nav class="hidden md:flex space-x-8">
-                    <a href="browse.html" class="text-gray-900 font-bold border-b-2 border-kiraya-blue pb-1">Browse</a>
-                    <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">Back to Home</a>
-                    <a href="list.html" class="kiraya-blue text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-opacity-90">List an Item</a>
+                    <a href="browse.html" class="kiraya-blue-text font-bold border-b-2 border-blue-700 pb-1">Browse Rentals</a>
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">Home</a>
+                    <a href="list.html" class="bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-800">List an Item</a>
                 </nav>
                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,94 +140,127 @@
         <div id="mobile-menu" class="hidden md:hidden bg-gray-50">
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <a href="browse.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Browse Rentals</a>
-                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Back to Home</a>
-                <a href="list.html" class="block w-full text-center kiraya-blue text-white px-3 py-2 rounded-full font-semibold mt-2">List an Item</a>
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200">Home</a>
+                <a href="list.html" class="block w-full text-center bg-blue-700 text-white px-3 py-2 rounded-full font-semibold mt-2">List an Item</a>
             </div>
         </div>
     </header>
 
-    <!-- Main -->
-    <main class="flex-grow py-12 fade-in-section">
+    <!-- Breadcrumb -->
+    <nav class="bg-gray-50 py-3" aria-label="Breadcrumb">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h1 class="text-4xl sm:text-5xl font-extrabold kiraya-blue-text mb-3">Browse Rentals</h1>
-                <p class="text-lg text-gray-600">Find cars, gadgets, and more — all in one place.</p>
-            </div>
+            <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                <li><a href="index.html" class="hover:text-kiraya-blue-text">Home</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li class="text-kiraya-blue-text font-medium" aria-current="page">Browse Rentals</li>
+            </ol>
+        </div>
+    </nav>
 
-            <!-- Filters -->
-            <div class="bg-white p-6 rounded-2xl shadow-lg mb-10">
-                <div class="grid md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Search</label>
-                        <input type="text" id="search-input" placeholder="Name, phone, city..."
-                               class="w-full px-5 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-kiraya-blue focus:border-kiraya-blue">
+    <!-- Hero CTA -->
+    <section class="py-12 px-4 bg-gradient-to-r from-blue-50 to-orange-50">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-4xl sm:text-5xl font-extrabold kiraya-blue-text mb-3 fade-in-section">
+                Browse Local Rentals Near You
+            </h1>
+            <p class="text-lg text-gray-700 mb-6 fade-in-section">
+                Cars, bikes, houses, PS5, iPhone — <strong>auto-expire in 7 days</strong>. No spam.
+            </p>
+            <p class="text-sm text-gray-600 fade-in-section">
+                Filter by city, price, pincode. Contact owner directly.
+            </p>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="py-8 px-4 bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Search -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Search</label>
+                    <input type="text" id="search-input" placeholder="Name, phone, city, pincode..." class="w-full px-5 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-700 focus:border-blue-700">
+                </div>
+                <!-- Price -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Price per Day</label>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-medium text-gray-600">₹0</span>
+                        <input type="range" id="price-range" min="0" max="5000" value="5000" step="100" class="flex-1 h-2 rounded-lg appearance-none cursor-pointer bg-gray-200">
+                        <span id="price-value" class="text-sm font-medium text-gray-700">₹5000+</span>
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Price per Day</label>
-                        <div class="flex items-center gap-3">
-                            <span class="text-sm font-medium text-gray-600">₹0</span>
-                            <input type="range" id="price-range" min="0" max="5000" value="5000" step="100" class="flex-1 h-2 rounded-lg appearance-none cursor-pointer bg-gray-200">
-                            <span id="price-value" class="text-sm font-medium text-gray-700">₹5000+</span>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
-                        <div class="flex flex-wrap gap-2">
-                            <button class="category-btn px-4 py-2 text-sm font-bold rounded-full bg-kiraya-blue text-white" data-category="All">All</button>
-                            <button class="category-btn px-4 py-2 text-sm font-bold rounded-full bg-gray-100 text-gray-700 border" data-category="Vehicles">Vehicles</button>
-                            <button class="category-btn px-4 py-2 text-sm font-bold rounded-full bg-gray-100 text-gray-700 border" data-category="Entertainment">Entertainment</button>
-                            <button class="category-btn px-4 py-2 text-sm font-bold rounded-full bg-gray-100 text-gray-700 border" data-category="Property">Property</button>
-                            <button class="category-btn px-4 py-2 text-sm font-bold rounded-full bg-gray-100 text-gray-700 border" data-category="Other">Other</button>
-                        </div>
+                </div>
+                <!-- Category -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-btn active" data-category="All">All</button>
+                        <button class="filter-btn inactive" data-category="Vehicles">Vehicles</button>
+                        <button class="filter-btn inactive" data-category="Entertainment">Entertainment</button>
+                        <button class="filter-btn inactive" data-category="Property">Property</button>
+                        <button class="filter-btn inactive" data-category="Other">Other</button>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- Grid -->
+    <!-- Listings Grid -->
+    <main class="flex-grow py-12 fade-in-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <section id="rental-listings" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                <!-- Listings injected here -->
+                <!-- Listings injected via JS -->
             </section>
         </div>
     </main>
 
+    <!-- CTA -->
+    <section class="py-12 px-4 bg-blue-50">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl font-bold kiraya-blue-text mb-4">Can't Find What You Need?</h2>
+            <a href="list.html" class="inline-block bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-800 shadow-lg">
+                List Your Item & Earn ₹500+/day
+            </a>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="kiraya-blue text-white py-8 mt-auto shadow-inner">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="mb-2">
-                <span class="text-2xl font-extrabold">Kiraya</span>
-                <span class="text-2xl font-extrabold kiraya-orange-text">.</span>
+    <footer class="bg-blue-700 text-white py-10 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="mb-4">
+                <span class="text-3xl font-extrabold">Kiraya</span>
+                <span class="text-3xl font-extrabold text-orange-500">.</span>
             </div>
-            <p class="text-sm text-gray-300 mt-1">© 2025 Kiraya. Made in India.</p>
+            <p class="text-sm mb-4">Browse locally. Rent globally. Made in India.</p>
+            <div class="flex justify-center gap-6 text-sm">
+                <a href="privacy.html" class="hover:underline">Privacy</a>
+                <a href="terms.html" class="hover:underline">Terms</a>
+                <a href="contact.html" class="hover:underline">Contact</a>
+            </div>
+            <p class="text-xs text-gray-300 mt-6">© 2025 Kiraya. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script>
-        // Mobile Menu
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Indian Time
-        const getIndianTime = () => {
-            const now = new Date();
-            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-            return new Date(utc + (5.5 * 3600000));
+        // Clean expired listings
+        const cleanExpired = () => {
+            const listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
+            const now = Date.now();
+            const valid = listings.filter(i => i.timestamp + (7 * 24 * 60 * 60 * 1000) > now);
+            localStorage.setItem('kirayaListings', JSON.stringify(valid));
         };
 
         const categoryMap = { car: 'Vehicles', bike: 'Vehicles', house: 'Property', games: 'Entertainment', other: 'Other' };
 
         const loadListings = () => {
+            cleanExpired();
             let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
-            const now = getIndianTime().getTime();
-            const oneWeekAgo = now - (7 * 24 * 60 * 60 * 1000);
-            listings = listings.filter(i => i.timestamp >= oneWeekAgo);
-            localStorage.setItem('kirayaListings', JSON.stringify(listings));
-            renderListings(listings, now);
+            renderListings(listings);
+            updateStructuredData(listings); // Update JSON-LD
         };
 
-        const renderListings = (listings, now) => {
+        const renderListings = (listings) => {
             const container = document.getElementById('rental-listings');
             container.innerHTML = '';
             if (!listings.length) {
@@ -154,16 +268,17 @@
                 return;
             }
 
+            const now = Date.now();
             const lastId = localStorage.getItem('lastListedItemId');
 
             listings.forEach(item => {
-                const expiryTime = item.timestamp + (7 * 24 * 60 * 60 * 1000);
-                const timeLeft = expiryTime - now;
+                const timeLeft = item.timestamp + (7 * 24 * 60 * 60 * 1000) - now;
+                if (timeLeft <= 0) return;
 
                 const card = document.createElement('div');
-                card.className = `card ${item.id == lastId ? 'highlight-card' : ''} ${timeLeft <= 0 ? 'expired' : ''}`;
+                card.className = `card ${item.id == lastId ? 'highlight-card' : ''}`;
                 card.dataset.category = categoryMap[item.type] || 'Other';
-                card.dataset.search = `${item.name} ${item.ownerPhone} ${item.city} ${item.pincode}`.toLowerCase();
+                card.dataset.search = `${item.name} ${item.ownerPhone} ${item.city} ${item.pincode} ${item.type}`.toLowerCase();
                 card.dataset.price = item.price;
                 card.dataset.id = item.id;
 
@@ -177,7 +292,7 @@
                     : `<div class="countdown">Expired</div>`;
 
                 card.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover rounded-t-2xl">
+                    <img src="${item.image}" alt="${item.name} for rent in ${item.city}" class="w-full h-48 object-cover rounded-t-2xl" loading="lazy">
                     <div class="p-6 space-y-3">
                         <h3 class="text-xl font-bold text-gray-900 truncate">${item.name}</h3>
                         <p class="text-sm text-gray-600"><strong>Phone:</strong> <a href="tel:${item.ownerPhone}" class="kiraya-blue-text hover:underline">${item.ownerPhone}</a></p>
@@ -189,7 +304,6 @@
                         </div>
                     </div>
                 `;
-
                 container.appendChild(card);
             });
 
@@ -203,46 +317,62 @@
 
             setupFilters();
             updateCountdowns();
-            setupScrollAnimation();
         };
 
         const updateCountdowns = () => {
-            const now = getIndianTime().getTime();
-            document.querySelectorAll('.countdown').forEach(el => {
-                const card = el.closest('[data-id]');
-                if (!card) return;
-                const id = card.dataset.id;
-                const listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
-                const item = listings.find(i => i.id == id);
-                if (!item) return;
-
-                const timeLeft = item.timestamp + (7 * 24 * 60 * 60 * 1000) - now;
-                if (timeLeft <= 0) {
-                    el.innerHTML = 'Expired';
-                    card.classList.add('expired');
-                    return;
-                }
-
-                const days = Math.floor(timeLeft / 86400000);
-                const hours = Math.floor((timeLeft % 86400000) / 3600000);
-                const minutes = Math.floor((timeLeft % 3600000) / 60000);
-                const seconds = Math.floor((timeLeft % 60000) / 1000);
-
-                el.innerHTML = `Expires in: <strong>${days}d ${hours}h ${minutes}m ${seconds}s</strong>`;
-            });
+            cleanExpired();
+            loadListings();
             setTimeout(updateCountdowns, 1000);
+        };
+
+        const updateStructuredData = (listings) => {
+            const itemList = listings.map((item, i) => ({
+                "@type": "ListItem",
+                "position": i + 1,
+                "item": {
+                    "@type": "Product",
+                    "name": `${item.name} for rent in ${item.city}`,
+                    "image": item.image,
+                    "description": item.description,
+                    "offers": {
+                        "@type": "Offer",
+                        "price": item.price,
+                        "priceCurrency": "INR",
+                        "availability": "https://schema.org/InStock"
+                    }
+                }
+            }));
+
+            const script = document.querySelector('script[type="application/ld+json"]');
+            const data = JSON.parse(script.textContent);
+            data.numberOfItems = itemList.length;
+            data.itemListElement = itemList;
+            script.textContent = JSON.stringify(data);
+        };
+
+        window.deleteItem = (id, correctPass) => {
+            const pass = prompt('Enter 6-digit delete password:');
+            if (!pass || pass.length !== 6) return alert('Enter 6 digits');
+            if (pass === correctPass) {
+                let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
+                listings = listings.filter(i => i.id != id);
+                localStorage.setItem('kirayaListings', JSON.stringify(listings));
+                loadListings();
+            } else {
+                alert('Wrong password!');
+            }
         };
 
         const setupFilters = () => {
             const searchInput = document.getElementById('search-input');
             const priceRange = document.getElementById('price-range');
             const priceValue = document.getElementById('price-value');
-            const categoryBtns = document.querySelectorAll('.category-btn');
+            const categoryBtns = document.querySelectorAll('.filter-btn');
 
             const filter = () => {
                 const query = searchInput.value.toLowerCase();
                 const maxPrice = parseInt(priceRange.value);
-                const activeCat = document.querySelector('.category-btn.bg-kiraya-blue')?.dataset.category || 'All';
+                const activeCat = document.querySelector('.filter-btn.active')?.dataset.category || 'All';
 
                 document.querySelectorAll('.card').forEach(card => {
                     const matchesSearch = card.dataset.search.includes(query);
@@ -265,11 +395,11 @@
             categoryBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     categoryBtns.forEach(b => {
-                        b.classList.remove('bg-kiraya-blue', 'text-white');
-                        b.classList.add('bg-gray-100', 'text-gray-700', 'border');
+                        b.classList.remove('active');
+                        b.classList.add('inactive');
                     });
-                    btn.classList.add('bg-kiraya-blue', 'text-white');
-                    btn.classList.remove('bg-gray-100', 'text-gray-700', 'border');
+                    btn.classList.add('active');
+                    btn.classList.remove('inactive');
                     filter();
                 });
             });
@@ -277,31 +407,23 @@
             filter();
         };
 
-        window.deleteItem = (id, correctPass) => {
-            const pass = prompt('Enter 6-digit delete password:');
-            if (!pass || pass.length !== 6) return alert('Enter 6 digits');
-            if (pass === correctPass) {
-                let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
-                listings = listings.filter(i => i.id != id);
-                localStorage.setItem('kirayaListings', JSON.stringify(listings));
-                loadListings();
-            } else {
-                alert('Wrong password!');
-            }
-        };
+        // Mobile Menu
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
 
-        const setupScrollAnimation = () => {
-            const obs = new IntersectionObserver(es => {
-                es.forEach(e => {
-                    if (e.isIntersecting) {
-                        setTimeout(() => e.target.classList.add('is-visible'), 50);
-                        obs.unobserve(e.target);
-                    }
-                });
-            }, { threshold: 0.15 });
-            document.querySelectorAll('.fade-in-section').forEach(c => obs.observe(c));
-        };
+        // Scroll Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.fade-in-section').forEach(el => observer.observe(el));
 
+        // Init
         loadListings();
     </script>
 </body>
