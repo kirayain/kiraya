@@ -14,21 +14,27 @@
         .scroll-animate { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
         .scroll-animate.show { opacity: 1; transform: translateY(0); }
 
-        .detail-modal, .delete-modal { 
+        .modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; 
         }
-        .detail-modal.show, .delete-modal.show { display: flex; animation: fadeIn 0.3s; }
+        .modal.show { display: flex; animation: fadeIn 0.3s; }
         .modal-content { background: white; padding: 28px; border-radius: 16px; max-width: 500px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .highlight-card { animation: glow 2s ease-in-out 2; border: 3px solid #10b981 !important; }
         @keyframes glow { 0%, 100% { box-shadow: 0 0 15px #10b981; } 50% { box-shadow: 0 0 30px #10b981; } }
 
-        .lockout { pointer-events: none; opacity: 0.6; }
+        .warning { background: #fef3c7; color: #92400e; padding: 12px; border-radius: 8px; margin: 16px 0; font-size: 0.9rem; }
     </style>
 </head>
 <body class="min-h-screen">
+
+    <!-- File Protocol Warning -->
+    <div id="fileWarning" class="warning hidden text-center mx-4">
+        <strong>Warning:</strong> You're opening via <code>file://</code>. Listings may not sync across devices. 
+        Use a local server (e.g., Live Server in VS Code) for full mobile sync.
+    </div>
 
     <!-- Header -->
     <header class="bg-white shadow-lg sticky top-0 z-20">
@@ -38,13 +44,6 @@
                 <a href="index.html" class="hover:text-amber-500 transition">Back to Home</a>
                 <a href="#" class="text-blue-700 font-bold border-b-2 border-blue-700 pb-1">Browse Rentals</a>
             </nav>
-            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-700 p-1">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-            </button>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 pb-2">
-            <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-500">Back to Home</a>
-            <a href="#" class="block py-2 px-4 text-sm text-blue-700 font-bold bg-blue-50/50">Browse Rentals</a>
         </div>
     </header>
 
@@ -80,7 +79,7 @@
     </main>
 
     <!-- Detail Modal -->
-    <div id="detailModal" class="detail-modal">
+    <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modalTitle" class="text-xl font-bold text-gray-900"></h3>
@@ -95,16 +94,17 @@
     </div>
 
     <!-- Delete Modal -->
-    <div id="deleteModal" class="delete-modal">
+    <div id="deleteModal" class="modal">
         <div class="modal-content">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Enter 6-Digit Password</h3>
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Remove Listing</h3>
+            <p class="text-sm text-gray-600 mb-4">Enter your 6-digit password to delete.</p>
             <input type="password" id="deletePassword" maxlength="6" inputmode="numeric" placeholder="123456"
-                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-center text-lg font-mono">
-            <div class="flex gap-3 mt-5">
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-center text-lg font-mono mb-4">
+            <div class="flex gap-3">
                 <button id="confirmDelete" class="flex-1 bg-red-600 text-white py-3 rounded-xl hover:bg-red-700 font-semibold">Remove</button>
                 <button id="cancelDelete" class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl hover:bg-gray-300 font-semibold">Cancel</button>
             </div>
-            <p id="errorMsg" class="text-red-600 text-sm mt-3 text-center hidden">Wrong password!</p>
+            <p id="errorMsg" class="text-red-600 text-sm mt-3 text-center hidden"></p>
             <p id="lockoutMsg" class="text-orange-600 text-sm mt-3 text-center hidden">
                 Too many attempts. Try again in <span id="countdown">30</span>s.
             </p>
@@ -117,10 +117,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Check for file:// protocol
+            if (window.location.protocol === 'file:') {
+                document.getElementById('fileWarning').classList.remove('hidden');
+            }
+
             const rentalListings = document.getElementById('rental-listings');
             const detailModal = document.getElementById('detailModal');
             const deleteModal = document.getElementById('deleteModal');
-            const closeDetail = document.getElementById('closeDetail');
             const modalTitle = document.getElementById('modalTitle');
             const modalImage = document.getElementById('modalImage');
             const modalDetails = document.getElementById('modalDetails');
@@ -138,11 +142,17 @@
 
             const categoryMap = { car: 'Vehicles', bike: 'Vehicles', house: 'Other', games: 'Games', consoles: 'Electronics', books: 'Other', other: 'Other' };
 
-            // Load & Filter Listings
             const loadListings = () => {
-                let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
+                let listings = [];
+                try {
+                    listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
+                } catch (e) {
+                    console.error("Failed to parse listings:", e);
+                    listings = [];
+                }
+
                 const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
-                listings = listings.filter(i => i.timestamp >= oneWeekAgo);
+                listings = listings.filter(i => i && i.timestamp >= oneWeekAgo);
                 localStorage.setItem('kirayaListings', JSON.stringify(listings));
                 renderListings(listings);
             };
@@ -157,6 +167,8 @@
                 const lastId = localStorage.getItem('lastListedItemId');
 
                 listings.forEach(item => {
+                    if (!item || !item.id) return;
+
                     const card = document.createElement('div');
                     card.className = `rental-card scroll-animate bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition ${item.id == lastId ? 'highlight-card' : ''}`;
                     card.dataset.category = categoryMap[item.type] || 'Other';
@@ -191,9 +203,9 @@
                 if (lastId) {
                     setTimeout(() => {
                         const el = document.querySelector('.highlight-card');
-                        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         localStorage.removeItem('lastListedItemId');
-                    }, 500);
+                    }, 600);
                 }
 
                 setupScrollAnimation();
@@ -218,9 +230,12 @@
 
             const openDeleteModal = (id, correctPass) => {
                 if (lockoutUntil > Date.now()) {
-                    alert(`Too many attempts. Try again in ${Math.ceil((lockoutUntil - Date.now()) / 1000)}s.`);
+                    const sec = Math.ceil((lockoutUntil - Date.now()) / 1000);
+                    errorMsg.textContent = `Try again in ${sec}s`;
+                    errorMsg.classList.remove('hidden');
                     return;
                 }
+
                 currentItem = { id, correctPass };
                 attempts = 0;
                 deleteModal.classList.add('show');
@@ -232,7 +247,7 @@
 
             confirmDelete.onclick = () => {
                 const input = deletePassword.value.trim();
-                if (input.length !== 6 || !/^\d+$/.test(input)) {
+                if (!/^\d{6}$/.test(input)) {
                     errorMsg.textContent = 'Enter 6 digits';
                     errorMsg.classList.remove('hidden');
                     return;
@@ -259,30 +274,35 @@
             };
 
             const startLockout = () => {
-                deleteModal.classList.add('lockout');
+                deleteModal.classList.add('pointer-events-none', 'opacity-60');
                 lockoutMsg.classList.remove('hidden');
+                errorMsg.classList.add('hidden');
+
                 const interval = setInterval(() => {
                     const sec = Math.ceil((lockoutUntil - Date.now()) / 1000);
-                    countdownSpan.textContent = sec;
+                    countdownSpan.textContent = sec > 0 ? sec : 0;
                     if (sec <= 0) {
                         clearInterval(interval);
-                        deleteModal.classList.remove('lockout');
+                        deleteModal.classList.remove('pointer-events-none', 'opacity-60');
                         lockoutMsg.classList.add('hidden');
                         attempts = 0;
                     }
                 }, 1000);
             };
 
-            cancelDelete.onclick = closeDetail.onclick = () => {
-                detailModal.classList.remove('show');
-                deleteModal.classList.remove('show');
-            };
+            // Close modals
+            [document.getElementById('closeDetail'), cancelDelete].forEach(btn => {
+                btn.onclick = () => {
+                    detailModal.classList.remove('show');
+                    deleteModal.classList.remove('show');
+                };
+            });
 
             [detailModal, deleteModal].forEach(m => m.addEventListener('click', e => {
                 if (e.target === m) m.classList.remove('show');
             }));
 
-            // Search, Filter, Animation
+            // Search
             document.getElementById('search-input').addEventListener('input', () => {
                 const q = document.getElementById('search-input').value.toLowerCase();
                 document.querySelectorAll('.rental-card').forEach(c => {
@@ -290,6 +310,7 @@
                 });
             });
 
+            // Filter
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const cat = btn.dataset.category;
@@ -306,6 +327,7 @@
                 });
             });
 
+            // Animation
             const setupScrollAnimation = () => {
                 const obs = new IntersectionObserver(es => {
                     es.forEach(e => {
