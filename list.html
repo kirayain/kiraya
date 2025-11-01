@@ -6,12 +6,22 @@
     <title>Kiraya - List Your Item</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Inter font -->
+    <!-- Load Inter font and custom styles for animation -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7f7f7; /* Very light gray background */
+            background-color: #f7f7f7;
+        }
+        /* Custom styles for smooth status message animation */
+        #status-message {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #status-message.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -21,20 +31,21 @@
     <div id="app-container" class="min-h-screen flex items-center justify-center p-4 sm:p-8">
         <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl p-6 sm:p-10 my-8 border border-gray-100">
             
-            <!-- Back to Home Link (Redirects to index.html) -->
+            <!-- Back to Home Link (Redirects to browse.html) -->
             <div class="mb-6 -mt-3">
-                <a href="index.html" class="text-gray-500 hover:text-green-700 font-medium text-base transition duration-150 flex items-center w-max">
+                <a href="./browse.html" class="text-gray-500 hover:text-green-700 font-medium text-base transition duration-150 flex items-center w-max">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Back to Home
+                    Browse Rentals
                 </a>
             </div>
             
             <header class="text-center mb-10">
                 <h1 class="text-5xl font-extrabold text-green-800 tracking-tight">Kiraya</h1>
                 <p class="mt-2 text-gray-500 text-lg">Your one-item-per-week listing platform</p>
-                <div id="status-message" class="mt-4 p-3 rounded-xl text-sm font-medium transition duration-300 shadow-inner hidden"></div>
+                <!-- Status Message - Initialized with 'hidden' and styled for animation -->
+                <div id="status-message" class="mt-4 p-3 rounded-xl text-sm font-medium transition duration-300 shadow-inner" style="display: none;"></div>
             </header>
 
             <!-- Item Listing Form -->
@@ -101,9 +112,9 @@
                     <p class="text-gray-500 text-xs mt-1">Provide a link to images or a detailed PDF, if available (optional).</p>
                 </div>
 
-                <!-- Submission Button -->
-                <button type="submit" id="submit-button" class="w-full py-3 px-4 bg-green-700 text-white font-bold text-lg rounded-xl shadow-lg hover:bg-green-800 transition duration-200 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 flex items-center justify-center disabled:bg-gray-400" disabled>
-                    <span id="button-text">List Item Now</span>
+                <!-- Submission Button - Disabled by default in HTML -->
+                <button type="submit" id="submit-button" class="w-full py-3 px-4 bg-green-700 text-white font-bold text-lg rounded-xl shadow-lg hover:bg-green-800 transition duration-200 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                    <span id="button-text">Initializing App...</span>
                     <svg id="loading-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -118,17 +129,18 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global Firebase variables
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- Global State ---
         let app;
         let db;
         let auth;
         let userId;
+        let isFirebaseReady = false; 
 
         // Configuration and App ID setup
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-kiraya-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const firebaseConfig = typeof __firebase_config !== 'undefined' && __firebase_config ? JSON.parse(__firebase_config) : null;
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         // DOM Elements
@@ -142,44 +154,56 @@
 
         // --- Utility Functions ---
 
-        /** Shows a temporary message in the status bar */
+        /** Shows a temporary message in the status bar with animation */
         function showStatus(message, type = 'success') {
             statusMessage.textContent = message;
-            statusMessage.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
-            statusMessage.classList.add('shadow-inner'); // Add shadow for effect
+            statusMessage.style.display = 'block';
+            
+            // Remove all specific styles and set base status styles
+            statusMessage.classList.remove('bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
             
             if (type === 'error') {
                 statusMessage.classList.add('bg-red-100', 'text-red-700');
             } else if (type === 'success') {
                 statusMessage.classList.add('bg-green-100', 'text-green-700');
-            } else {
+            } else { // info
                 statusMessage.classList.add('bg-blue-100', 'text-blue-700');
             }
+
+            // Trigger animation
+            setTimeout(() => {
+                statusMessage.classList.add('visible');
+            }, 10);
+            
             statusMessage.scrollIntoView({ behavior: 'smooth' });
 
             // Hide after 5 seconds
             setTimeout(() => {
-                statusMessage.classList.add('hidden');
+                statusMessage.classList.remove('visible');
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 300); // Wait for transition to finish
             }, 5000);
         }
 
         function setSubmitting(isSubmitting) {
-            submitButton.disabled = isSubmitting;
+            submitButton.disabled = isSubmitting || !isFirebaseReady;
             if (isSubmitting) {
                 loadingSpinner.classList.remove('hidden');
                 buttonText.textContent = 'Checking availability...';
                 form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
             } else {
                 loadingSpinner.classList.add('hidden');
-                buttonText.textContent = 'List Item Now';
+                // Only change button text if the app is ready to submit
+                if (isFirebaseReady) {
+                    buttonText.textContent = 'List Item Now';
+                }
                 form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
             }
         }
         
         /**
          * Validates a 10-digit Indian mobile number (starts with 6, 7, 8, or 9).
-         * @param {string} phone - The phone number string.
-         * @returns {boolean} True if valid, false otherwise.
          */
         function validateIndianPhoneNumber(phone) {
             const regex = /^[6-9]\d{9}$/;
@@ -201,11 +225,14 @@
         // --- Firebase Initialization and Auth ---
 
         async function initializeFirebase() {
+            // Display initial loading state
+            loadingSpinner.classList.remove('hidden');
+            submitButton.disabled = true;
+            buttonText.textContent = 'Initializing App...';
+
             try {
-                if (Object.keys(firebaseConfig).length === 0) {
-                    showStatus("Firebase configuration missing. Running in demo mode.", 'error');
-                    submitButton.disabled = false;
-                    return;
+                if (!firebaseConfig) {
+                    throw new Error("Missing Firebase configuration.");
                 }
                 
                 app = initializeApp(firebaseConfig);
@@ -220,17 +247,26 @@
                 }
 
                 userId = auth.currentUser?.uid || crypto.randomUUID();
+                isFirebaseReady = true; // Mark app as ready!
                 
                 // Once authenticated, enable the form and check status
                 submitButton.disabled = false;
-                showStatus("Ready to list your item! User ID: " + userId.substring(0, 8) + "...", 'info');
+                loadingSpinner.classList.add('hidden');
+                buttonText.textContent = 'Checking Cooldown...';
+
+                showStatus(`App ready. User ID: ${userId.substring(0, 8)}...`, 'info');
 
                 // Start checking the last listing status
                 checkLastListingStatus();
 
             } catch (error) {
-                console.error("Error initializing Firebase or during authentication:", error);
-                showStatus("Failed to initialize the app. Check console for details.", 'error');
+                console.error("Critical Error during Firebase initialization:", error);
+                showStatus(`Failed to initialize the app. Listing is disabled. Error: ${error.message}`, 'error');
+                
+                isFirebaseReady = false;
+                submitButton.disabled = true;
+                loadingSpinner.classList.add('hidden');
+                buttonText.textContent = 'App Error (See Console)';
             }
         }
 
@@ -239,17 +275,23 @@
         const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
         function getLastListingDocRef() {
+            // Private path for cooldown tracking
             const userPath = `/artifacts/${appId}/users/${userId}/listings`;
-            // Using a specific document ID 'last_listing' to store the last listing time for the user
             return doc(db, userPath, 'last_listing');
         }
+        
+        function getPublicListingsCollectionRef() {
+            // Public path for viewable items
+            return collection(db, `/artifacts/${appId}/public/data/listings`);
+        }
+
 
         /**
          * Checks Firestore to see if the user has listed an item in the last 7 days.
          * @returns {boolean} True if listing is allowed, false otherwise.
          */
         function checkListingCooldown(lastListingTimestamp) {
-            if (!lastListingTimestamp) return true; // No previous listing, so allowed
+            if (!lastListingTimestamp) return true; 
 
             // Firestore Timestamps need to be converted to Date objects
             const lastListingDate = lastListingTimestamp.toDate(); 
@@ -259,15 +301,15 @@
         }
 
         function checkLastListingStatus() {
-            if (!db || !userId) return;
+            if (!isFirebaseReady) return; 
 
             const docRef = getLastListingDocRef();
             
             // Use onSnapshot for real-time updates of the status message
             onSnapshot(docRef, (docSnap) => {
                 const statusMsgEl = document.getElementById('status-message');
-                statusMsgEl.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
-                statusMsgEl.classList.add('bg-blue-100', 'text-blue-700'); // Default info color
+                statusMsgEl.classList.remove('bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
+                statusMsgEl.style.display = 'block';
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -284,8 +326,7 @@
 
                     if (isAllowed) {
                         statusMsgEl.textContent = `Welcome back! Your last listing was on ${lastDate}. You can list a new item now.`;
-                        statusMsgEl.classList.remove('bg-blue-100', 'text-blue-700');
-                        statusMsgEl.classList.add('bg-green-100', 'text-green-700');
+                        statusMsgEl.classList.add('bg-green-100', 'text-green-700', 'visible');
                         submitButton.disabled = false;
                         buttonText.textContent = 'List Item Now';
                     } else {
@@ -294,21 +335,21 @@
                         const remainingHours = Math.ceil(remainingMs / (1000 * 60 * 60));
                         const remainingDays = Math.ceil(remainingHours / 24);
 
-                        statusMsgEl.textContent = `You listed an item recently on ${lastDate}. Please wait ${remainingDays} more day(s) before listing another item.`;
-                        statusMsgEl.classList.remove('bg-blue-100', 'text-blue-700');
-                        statusMsgEl.classList.add('bg-red-100', 'text-red-700');
+                        statusMsgEl.textContent = `Cooldown active! Listed on ${lastDate}. Wait ${remainingDays} more day(s) to list again.`;
+                        statusMsgEl.classList.add('bg-red-100', 'text-red-700', 'visible');
                         submitButton.disabled = true;
                         buttonText.textContent = 'Wait for Cooldown';
                     }
                 } else {
-                    statusMsgEl.textContent = "It looks like you haven't listed an item yet. Go ahead and list your first item!";
+                    statusMsgEl.textContent = "You're new here! Go ahead and list your first item now.";
+                    statusMsgEl.classList.add('bg-blue-100', 'text-blue-700', 'visible');
                     submitButton.disabled = false;
                     buttonText.textContent = 'List Item Now';
                 }
             }, (error) => {
                 console.error("Error listening to listing status:", error);
                 showStatus("Error checking listing status. Please try refreshing.", 'error');
-                submitButton.disabled = false;
+                submitButton.disabled = !isFirebaseReady;
             });
         }
 
@@ -318,8 +359,9 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            if (!db || !userId) {
-                showStatus("App is not fully initialized. Please wait a moment.", 'error');
+            // Critical check to prevent submission before initialization is complete
+            if (!isFirebaseReady) {
+                showStatus("App is still initializing or encountered an error. Please wait for the 'List Item Now' button to activate.", 'error');
                 return;
             }
 
@@ -334,12 +376,12 @@
             setSubmitting(true);
 
             try {
-                const docRef = getLastListingDocRef();
-                const docSnap = await getDoc(docRef);
+                const privateDocRef = getLastListingDocRef();
+                const privateDocSnap = await getDoc(privateDocRef);
                 
                 let isAllowed = true;
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
+                if (privateDocSnap.exists()) {
+                    const data = privateDocSnap.data();
                     isAllowed = checkListingCooldown(data.timestamp);
                 }
 
@@ -357,21 +399,29 @@
                     phone: phoneValue,
                     itemType: document.getElementById('item-type').value,
                     itemName: document.getElementById('item-name').value,
-                    rentalRate: document.getElementById('rental-rate').value, // New field
+                    rentalRate: parseInt(document.getElementById('rental-rate').value),
                     description: document.getElementById('description').value,
-                    pdfLink: document.getElementById('pdf-link').value || null, // New optional field
-                    userId: userId 
+                    pdfLink: document.getElementById('pdf-link').value || null,
+                    userId: userId,
+                    listDate: timestamp.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
                 };
 
-                // 1. Update the 'last_listing' document to start the cooldown
-                await setDoc(docRef, listingData); 
+                // 1. Update the 'last_listing' document to start the cooldown (Private)
+                await setDoc(privateDocRef, listingData); 
                 
-                showStatus(`Success! Your item, '${listingData.itemName}', has been listed for ₹${listingData.rentalRate}. Redirecting to Browse Rentals...`, 'success');
+                // 2. Add the listing to the public collection (Public)
+                const publicListingsCollectionRef = getPublicListingsCollectionRef();
+                await addDoc(publicListingsCollectionRef, listingData);
+
+
+                showStatus(`Success! Your item, '${listingData.itemName}', has been listed. Redirecting to Browse Rentals...`, 'success');
                 form.reset(); // Clear the form
                 
-                // 2. Redirect the user to browse.html after a short delay
+                // 3. Redirect the user to browse.html after a short delay, passing item details
+                const redirectUrl = `./browse.html?listedItem=${encodeURIComponent(listingData.itemName)}&listerName=${encodeURIComponent(listingData.name)}`;
+
                 setTimeout(() => {
-                    window.location.href = 'browse.html';
+                    window.location.href = redirectUrl;
                 }, 1500); // 1.5 seconds delay to show success message
                 
             } catch (error) {
