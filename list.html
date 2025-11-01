@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-IN">
 <head>
+    <!-- SEO & Meta -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>List Your Item for Rent in India | Kiraya</title>
@@ -14,11 +15,15 @@
     <meta property="og:image" content="https://kiraya.in/assets/og-list.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
 
+    <!-- Tailwind + Font -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+    
+    <!-- JSON-LD -->
     <script type="application/ld+json">
-    { "@context": "https://schema.org", "@type": "WebPage", "name": "List Your Item for Rent", "url": "https://kiraya.in/list.html" }
+    { "@context": "https://schema.org", "@type": "WebPage", "name": "List Your Item", "url": "https://kiraya.in/list.html" }
     </script>
+
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
         ::-webkit-scrollbar { width: 8px; }
@@ -62,6 +67,7 @@
 
         <!-- Form -->
         <form id="listingForm" class="max-w-3xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-xl form-animate space-y-7">
+            <!-- Owner Info -->
             <div class="grid md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Your Full Name *</label>
@@ -74,6 +80,7 @@
                 </div>
             </div>
 
+            <!-- Email & City -->
             <div class="grid md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
@@ -85,6 +92,7 @@
                 </div>
             </div>
 
+            <!-- Pincode & Item Type -->
             <div class="grid md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Pincode *</label>
@@ -105,16 +113,19 @@
                 </div>
             </div>
 
+            <!-- Item Name -->
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Item Name *</label>
                 <input type="text" id="itemName" required placeholder="Honda City 2022" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-lg">
             </div>
 
+            <!-- Description -->
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
                 <textarea id="description" rows="4" required placeholder="Condition, features, availability..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-lg resize-none"></textarea>
             </div>
 
+            <!-- Price & Image -->
             <div class="grid md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Price per Day (₹) *</label>
@@ -127,18 +138,20 @@
                 </div>
             </div>
 
-            <!-- 6-Digit Password -->
+            <!-- 6-Digit Delete Password -->
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Set 6-Digit Delete Password *</label>
                 <input type="password" id="deletePassword" required pattern="[0-9]{6}" maxlength="6" placeholder="123456" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-lg">
                 <p class="text-xs text-red-600 mt-1">Required to remove your listing later. Keep it safe!</p>
             </div>
 
+            <!-- Submit -->
             <button type="submit" class="w-full bg-blue-700 text-white font-bold py-4 rounded-xl hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 transition text-lg shadow-lg transform hover:scale-105 active:scale-100">
                 List Item & Redirect to Browse
             </button>
         </form>
 
+        <!-- Mobile Back -->
         <div class="mt-10 text-center md:hidden">
             <a href="index.html" class="inline-block px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-full hover:bg-gray-200 transition">
                 Back to Home
@@ -146,21 +159,30 @@
         </div>
     </main>
 
+    <!-- Footer -->
     <footer class="bg-gray-800 mt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-gray-400">
             &copy; 2025 <a href="index.html" class="hover:text-white">Kiraya</a>. Renting made easy in India.
         </div>
     </footer>
 
+    <!-- Toast -->
     <div id="toast" class="toast">Item listed successfully! Redirecting...</div>
 
+    <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('listingForm');
             const imageInput = document.getElementById('itemImage');
             const imagePreview = document.getElementById('imagePreview');
             const toast = document.getElementById('toast');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
 
+            // Mobile Menu
+            mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+            // Image Preview
             imageInput.addEventListener('change', e => {
                 const file = e.target.files[0];
                 if (file) {
@@ -173,6 +195,7 @@
                 }
             });
 
+            // Form Submit
             form.addEventListener('submit', e => {
                 e.preventDefault();
                 const file = imageInput.files[0];
@@ -201,12 +224,19 @@
                     listings.push(item);
                     localStorage.setItem('kirayaListings', JSON.stringify(listings));
 
+                    // Store last listed item for auto-scroll
+                    localStorage.setItem('lastListedItemId', item.id);
+
+                    // Show toast
                     toast.classList.add('show');
-                    setTimeout(() => window.location.href = 'browse.html', 1500);
+                    setTimeout(() => {
+                        window.location.href = 'browse.html';
+                    }, 1500);
                 };
                 reader.readAsDataURL(file);
             });
 
+            // Animate on load
             setTimeout(() => {
                 document.querySelectorAll('.form-animate').forEach((el, i) => {
                     setTimeout(() => el.classList.add('show'), i * 120);
