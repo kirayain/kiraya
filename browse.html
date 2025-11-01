@@ -14,13 +14,18 @@
         .scroll-animate { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
         .scroll-animate.show { opacity: 1; transform: translateY(0); }
 
-        .detail-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-        .detail-modal.show { display: flex; animation: fadeIn 0.3s; }
+        .detail-modal, .delete-modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; 
+        }
+        .detail-modal.show, .delete-modal.show { display: flex; animation: fadeIn 0.3s; }
         .modal-content { background: white; padding: 28px; border-radius: 16px; max-width: 500px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .highlight-card { animation: glow 2s ease-in-out 2; border: 3px solid #10b981 !important; }
         @keyframes glow { 0%, 100% { box-shadow: 0 0 15px #10b981; } 50% { box-shadow: 0 0 30px #10b981; } }
+
+        .lockout { pointer-events: none; opacity: 0.6; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -79,13 +84,30 @@
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modalTitle" class="text-xl font-bold text-gray-900"></h3>
-                <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                <button id="closeDetail" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             <img id="modalImage" src="" alt="" class="w-full h-56 object-cover rounded-xl mb-4">
             <div id="modalDetails" class="space-y-2 text-sm text-gray-700"></div>
-            <button id="removeBtn" class="mt-6 w-full bg-red-600 text-white py-3 rounded-xl hover:bg-red-700 font-semibold hidden">Remove Listing</button>
+            <button id="removeBtn" class="mt-6 w-full bg-red-600 text-white py-3 rounded-xl hover:bg-red-700 font-semibold">Remove Listing</button>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="delete-modal">
+        <div class="modal-content">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Enter 6-Digit Password</h3>
+            <input type="password" id="deletePassword" maxlength="6" inputmode="numeric" placeholder="123456"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-center text-lg font-mono">
+            <div class="flex gap-3 mt-5">
+                <button id="confirmDelete" class="flex-1 bg-red-600 text-white py-3 rounded-xl hover:bg-red-700 font-semibold">Remove</button>
+                <button id="cancelDelete" class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl hover:bg-gray-300 font-semibold">Cancel</button>
+            </div>
+            <p id="errorMsg" class="text-red-600 text-sm mt-3 text-center hidden">Wrong password!</p>
+            <p id="lockoutMsg" class="text-orange-600 text-sm mt-3 text-center hidden">
+                Too many attempts. Try again in <span id="countdown">30</span>s.
+            </p>
         </div>
     </div>
 
@@ -96,17 +118,27 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const rentalListings = document.getElementById('rental-listings');
-            const modal = document.getElementById('detailModal');
-            const closeModalBtn = document.getElementById('closeModal');
+            const detailModal = document.getElementById('detailModal');
+            const deleteModal = document.getElementById('deleteModal');
+            const closeDetail = document.getElementById('closeDetail');
             const modalTitle = document.getElementById('modalTitle');
             const modalImage = document.getElementById('modalImage');
             const modalDetails = document.getElementById('modalDetails');
             const removeBtn = document.getElementById('removeBtn');
+            const deletePassword = document.getElementById('deletePassword');
+            const confirmDelete = document.getElementById('confirmDelete');
+            const cancelDelete = document.getElementById('cancelDelete');
+            const errorMsg = document.getElementById('errorMsg');
+            const lockoutMsg = document.getElementById('lockoutMsg');
+            const countdownSpan = document.getElementById('countdown');
+
+            let currentItem = null;
+            let attempts = 0;
+            let lockoutUntil = 0;
 
             const categoryMap = { car: 'Vehicles', bike: 'Vehicles', house: 'Other', games: 'Games', consoles: 'Electronics', books: 'Other', other: 'Other' };
 
-            let currentItem = null;
-
+            // Load & Filter Listings
             const loadListings = () => {
                 let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
                 const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
@@ -148,19 +180,14 @@
                         </div>
                     `;
 
-                    // Click on "View Details" → open modal
                     card.querySelector('.view-details-btn').addEventListener('click', (e) => {
                         e.stopPropagation();
                         openDetailModal(item);
                     });
-
-                    // Optional: Click anywhere on card to open modal
                     card.addEventListener('click', () => openDetailModal(item));
-
                     rentalListings.appendChild(card);
                 });
 
-                // Auto-scroll to newly listed item
                 if (lastId) {
                     setTimeout(() => {
                         const el = document.querySelector('.highlight-card');
@@ -185,56 +212,110 @@
                     <p><strong>Listed:</strong> ${new Date(item.timestamp).toLocaleDateString()}</p>
                 `;
 
-                removeBtn.onclick = () => openSecureDeleteModal(item.id, item.deletePassword);
-                removeBtn.classList.remove('hidden');
-
-                modal.classList.add('show');
+                removeBtn.onclick = () => openDeleteModal(item.id, item.deletePassword);
+                detailModal.classList.add('show');
             };
 
-            closeModalBtn.onclick = () => modal.classList.remove('show');
-            modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
+            const openDeleteModal = (id, correctPass) => {
+                if (lockoutUntil > Date.now()) {
+                    alert(`Too many attempts. Try again in ${Math.ceil((lockoutUntil - Date.now()) / 1000)}s.`);
+                    return;
+                }
+                currentItem = { id, correctPass };
+                attempts = 0;
+                deleteModal.classList.add('show');
+                deletePassword.value = '';
+                errorMsg.classList.add('hidden');
+                lockoutMsg.classList.add('hidden');
+                deletePassword.focus();
+            };
 
-            // Secure Delete Modal (use your existing secure delete code)
-            window.openSecureDeleteModal = (id, pass) => { /* paste your secure delete function */ };
+            confirmDelete.onclick = () => {
+                const input = deletePassword.value.trim();
+                if (input.length !== 6 || !/^\d+$/.test(input)) {
+                    errorMsg.textContent = 'Enter 6 digits';
+                    errorMsg.classList.remove('hidden');
+                    return;
+                }
 
-            // Search
+                if (input === currentItem.correctPass) {
+                    let listings = JSON.parse(localStorage.getItem('kirayaListings')) || [];
+                    listings = listings.filter(i => i.id != currentItem.id);
+                    localStorage.setItem('kirayaListings', JSON.stringify(listings));
+                    deleteModal.classList.remove('show');
+                    detailModal.classList.remove('show');
+                    loadListings();
+                } else {
+                    attempts++;
+                    if (attempts >= 3) {
+                        lockoutUntil = Date.now() + 30000;
+                        startLockout();
+                    } else {
+                        errorMsg.textContent = `Wrong password! (${3 - attempts} left)`;
+                        errorMsg.classList.remove('hidden');
+                        deletePassword.value = '';
+                    }
+                }
+            };
+
+            const startLockout = () => {
+                deleteModal.classList.add('lockout');
+                lockoutMsg.classList.remove('hidden');
+                const interval = setInterval(() => {
+                    const sec = Math.ceil((lockoutUntil - Date.now()) / 1000);
+                    countdownSpan.textContent = sec;
+                    if (sec <= 0) {
+                        clearInterval(interval);
+                        deleteModal.classList.remove('lockout');
+                        lockoutMsg.classList.add('hidden');
+                        attempts = 0;
+                    }
+                }, 1000);
+            };
+
+            cancelDelete.onclick = closeDetail.onclick = () => {
+                detailModal.classList.remove('show');
+                deleteModal.classList.remove('show');
+            };
+
+            [detailModal, deleteModal].forEach(m => m.addEventListener('click', e => {
+                if (e.target === m) m.classList.remove('show');
+            }));
+
+            // Search, Filter, Animation
             document.getElementById('search-input').addEventListener('input', () => {
-                const query = document.getElementById('search-input').value.toLowerCase();
-                document.querySelectorAll('.rental-card').forEach(card => {
-                    const text = card.dataset.search;
-                    card.style.display = text.includes(query) ? 'block' : 'none';
+                const q = document.getElementById('search-input').value.toLowerCase();
+                document.querySelectorAll('.rental-card').forEach(c => {
+                    c.style.display = c.dataset.search.includes(q) ? 'block' : 'none';
                 });
             });
 
-            // Filter
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const category = btn.dataset.category;
+                    const cat = btn.dataset.category;
                     document.querySelectorAll('.category-btn').forEach(b => {
-                        b.classList.remove('bg-blue-700', 'text-white', 'hover:bg-blue-800');
+                        b.classList.remove('bg-blue-700', 'text-white');
                         b.classList.add('bg-white', 'text-gray-700', 'border', 'border-gray-300');
                     });
-                    btn.classList.add('bg-blue-700', 'text-white', 'hover:bg-blue-800');
+                    btn.classList.add('bg-blue-700', 'text-white');
                     btn.classList.remove('bg-white', 'text-gray-700', 'border');
 
-                    document.querySelectorAll('.rental-card').forEach(card => {
-                        const cardCat = card.dataset.category;
-                        card.style.display = (category === 'All' || cardCat === category) ? 'block' : 'none';
+                    document.querySelectorAll('.rental-card').forEach(c => {
+                        c.style.display = (cat === 'All' || c.dataset.category === cat) ? 'block' : 'none';
                     });
                 });
             });
 
-            // Scroll Animation
             const setupScrollAnimation = () => {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            setTimeout(() => entry.target.classList.add('show'), 50);
-                            observer.unobserve(entry.target);
+                const obs = new IntersectionObserver(es => {
+                    es.forEach(e => {
+                        if (e.isIntersecting) {
+                            setTimeout(() => e.target.classList.add('show'), 50);
+                            obs.unobserve(e.target);
                         }
                     });
                 }, { threshold: 0.1 });
-                document.querySelectorAll('.rental-card').forEach(c => observer.observe(c));
+                document.querySelectorAll('.rental-card').forEach(c => obs.observe(c));
             };
 
             loadListings();
