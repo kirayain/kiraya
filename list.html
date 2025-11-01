@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiraya - List Your Item</title>
+    <title>Kiraya - List Items for Rent (7-Day Cooldown)</title>
+    <!-- Improved SEO Meta Description -->
+    <meta name="description" content="Easily list your items for rent on Kiraya. Follow our 7-day cooldown rule to maintain listing quality and visibility.">
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Inter font and custom styles for animation -->
@@ -37,13 +39,13 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Browse Rentals
+                    Back to Home
                 </a>
             </div>
             
             <header class="text-center mb-10">
                 <h1 class="text-5xl font-extrabold text-green-800 tracking-tight">Kiraya</h1>
-                <p class="mt-2 text-gray-500 text-lg">Your one-item-per-week listing platform</p>
+                <p class="mt-2 text-gray-500 text-lg">Your peer-to-peer rental listing platform with a weekly cooldown</p>
                 <!-- Status Message - Initialized with 'hidden' and styled for animation -->
                 <div id="status-message" class="mt-4 p-3 rounded-xl text-sm font-medium transition duration-300 shadow-inner" style="display: none;"></div>
             </header>
@@ -67,7 +69,8 @@
 
                 <div>
                     <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">Phone Number (10-Digit Indian Mobile)</label>
-                    <input type="tel" id="phone" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-green-600 focus:border-green-600 transition duration-150 shadow-sm" placeholder="e.g., 9876543210">
+                    <!-- Added pattern for browser validation and class for live feedback -->
+                    <input type="tel" id="phone" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-green-600 focus:border-green-600 transition duration-150 shadow-sm" placeholder="e.g., 9876543210" pattern="[6-9]{1}[0-9]{9}">
                     <p id="phone-error" class="text-red-500 text-xs mt-1 hidden">Please enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9).</p>
                 </div>
                 
@@ -113,7 +116,7 @@
                 </div>
 
                 <!-- Submission Button - Disabled by default in HTML -->
-                <button type="submit" id="submit-button" class="w-full py-3 px-4 bg-green-700 text-white font-bold text-lg rounded-xl shadow-lg hover:bg-green-800 transition duration-200 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                <button type="submit" id="submit-button" class="w-full py-3 px-4 bg-green-700 text-white font-bold text-lg rounded-xl shadow-lg hover:bg-green-800 transition duration-200 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed">
                     <span id="button-text">Initializing App...</span>
                     <svg id="loading-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -129,8 +132,11 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
+        // Setting Firebase Log Level for easier debugging
+        setLogLevel('Debug');
+
         // --- Global State ---
         let app;
         let db;
@@ -138,9 +144,17 @@
         let userId;
         let isFirebaseReady = false; 
 
-        // Configuration and App ID setup
+        // Configuration and App ID setup - Improved robustness for global variables
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-kiraya-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' && __firebase_config ? JSON.parse(__firebase_config) : null;
+        
+        let firebaseConfig = null;
+        try {
+            // Robust parsing of the global config variable
+            firebaseConfig = window.__firebase_config ? JSON.parse(window.__firebase_config) : null;
+        } catch (e) {
+            console.error("Failed to parse __firebase_config:", e);
+        }
+        
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         // DOM Elements
@@ -187,7 +201,8 @@
         }
 
         function setSubmitting(isSubmitting) {
-            submitButton.disabled = isSubmitting || !isFirebaseReady;
+            // Disabled if submitting OR not ready OR phone is invalid
+            submitButton.disabled = isSubmitting || !isFirebaseReady || !validateIndianPhoneNumber(phoneInput.value);
             if (isSubmitting) {
                 loadingSpinner.classList.remove('hidden');
                 buttonText.textContent = 'Checking availability...';
@@ -206,19 +221,23 @@
          * Validates a 10-digit Indian mobile number (starts with 6, 7, 8, or 9).
          */
         function validateIndianPhoneNumber(phone) {
+            // Ensures exactly 10 digits starting with 6-9
             const regex = /^[6-9]\d{9}$/;
             return regex.test(phone);
         }
         
         // Live validation for phone number
         phoneInput.addEventListener('input', () => {
-            if (phoneInput.value.length > 0 && !validateIndianPhoneNumber(phoneInput.value)) {
+            const isValid = validateIndianPhoneNumber(phoneInput.value);
+            if (phoneInput.value.length > 0 && !isValid) {
                 phoneError.classList.remove('hidden');
                 phoneInput.classList.add('border-red-500');
             } else {
                 phoneError.classList.add('hidden');
                 phoneInput.classList.remove('border-red-500');
             }
+            // Re-check cooldown status to update button state based on phone validity
+            if(isFirebaseReady) checkLastListingStatus(true); 
         });
 
 
@@ -232,7 +251,7 @@
 
             try {
                 if (!firebaseConfig) {
-                    throw new Error("Missing Firebase configuration.");
+                    throw new Error("Missing or invalid Firebase configuration. Please ensure __firebase_config is correctly set.");
                 }
                 
                 app = initializeApp(firebaseConfig);
@@ -250,7 +269,6 @@
                 isFirebaseReady = true; // Mark app as ready!
                 
                 // Once authenticated, enable the form and check status
-                submitButton.disabled = false;
                 loadingSpinner.classList.add('hidden');
                 buttonText.textContent = 'Checking Cooldown...';
 
@@ -291,7 +309,7 @@
          * @returns {boolean} True if listing is allowed, false otherwise.
          */
         function checkListingCooldown(lastListingTimestamp) {
-            if (!lastListingTimestamp) return true; 
+            if (!lastListingTimestamp || typeof lastListingTimestamp.toDate !== 'function') return true; 
 
             // Firestore Timestamps need to be converted to Date objects
             const lastListingDate = lastListingTimestamp.toDate(); 
@@ -300,8 +318,16 @@
             return timeSinceLastListing >= SEVEN_DAYS_MS;
         }
 
-        function checkLastListingStatus() {
+        function checkLastListingStatus(skipStatusUpdate = false) {
             if (!isFirebaseReady) return; 
+
+            // Check phone validity first
+            if (!validateIndianPhoneNumber(phoneInput.value)) {
+                submitButton.disabled = true;
+                buttonText.textContent = 'Enter Valid Phone';
+                if(!skipStatusUpdate) showStatus("Please enter a valid 10-digit phone number to list.", 'error');
+                return; // Stop here if phone is invalid
+            }
 
             const docRef = getLastListingDocRef();
             
@@ -309,7 +335,8 @@
             onSnapshot(docRef, (docSnap) => {
                 const statusMsgEl = document.getElementById('status-message');
                 statusMsgEl.classList.remove('bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
-                statusMsgEl.style.display = 'block';
+                if(!skipStatusUpdate) statusMsgEl.style.display = 'block';
+
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -317,7 +344,9 @@
 
                     // Ensure timestamp is valid before proceeding
                     if (!lastListingTimestamp || typeof lastListingTimestamp.toDate !== 'function') {
-                         statusMsgEl.textContent = "Error: Invalid last listing record found. Please proceed with caution.";
+                         if(!skipStatusUpdate) statusMsgEl.textContent = "Error: Invalid last listing record found. Please proceed with caution.";
+                         submitButton.disabled = false;
+                         buttonText.textContent = 'List Item Now';
                          return;
                     }
                     
@@ -325,8 +354,8 @@
                     const lastDate = lastListingTimestamp.toDate().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
                     if (isAllowed) {
-                        statusMsgEl.textContent = `Welcome back! Your last listing was on ${lastDate}. You can list a new item now.`;
-                        statusMsgEl.classList.add('bg-green-100', 'text-green-700', 'visible');
+                        if(!skipStatusUpdate) statusMsgEl.textContent = `Welcome back! Your last listing was on ${lastDate}. You can list a new item now.`;
+                        if(!skipStatusUpdate) statusMsgEl.classList.add('bg-green-100', 'text-green-700', 'visible');
                         submitButton.disabled = false;
                         buttonText.textContent = 'List Item Now';
                     } else {
@@ -335,21 +364,22 @@
                         const remainingHours = Math.ceil(remainingMs / (1000 * 60 * 60));
                         const remainingDays = Math.ceil(remainingHours / 24);
 
-                        statusMsgEl.textContent = `Cooldown active! Listed on ${lastDate}. Wait ${remainingDays} more day(s) to list again.`;
-                        statusMsgEl.classList.add('bg-red-100', 'text-red-700', 'visible');
+                        if(!skipStatusUpdate) statusMsgEl.textContent = `Cooldown active! Listed on ${lastDate}. Wait ${remainingDays} more day(s) to list again.`;
+                        if(!skipStatusUpdate) statusMsgEl.classList.add('bg-red-100', 'text-red-700', 'visible');
                         submitButton.disabled = true;
                         buttonText.textContent = 'Wait for Cooldown';
                     }
                 } else {
-                    statusMsgEl.textContent = "You're new here! Go ahead and list your first item now.";
-                    statusMsgEl.classList.add('bg-blue-100', 'text-blue-700', 'visible');
+                    if(!skipStatusUpdate) statusMsgEl.textContent = "You're new here! Go ahead and list your first item now.";
+                    if(!skipStatusUpdate) statusMsgEl.classList.add('bg-blue-100', 'text-blue-700', 'visible');
                     submitButton.disabled = false;
                     buttonText.textContent = 'List Item Now';
                 }
             }, (error) => {
                 console.error("Error listening to listing status:", error);
                 showStatus("Error checking listing status. Please try refreshing.", 'error');
-                submitButton.disabled = !isFirebaseReady;
+                submitButton.disabled = true; // Disable on error
+                buttonText.textContent = 'Listing Check Failed';
             });
         }
 
@@ -359,17 +389,10 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Critical check to prevent submission before initialization is complete
-            if (!isFirebaseReady) {
-                showStatus("App is still initializing or encountered an error. Please wait for the 'List Item Now' button to activate.", 'error');
-                return;
-            }
-
+            // Re-validate phone and ready state just before submission
             const phoneValue = document.getElementById('phone').value;
-            if (!validateIndianPhoneNumber(phoneValue)) {
-                showStatus("Validation Error: Please correct your 10-digit Indian phone number.", 'error');
-                phoneError.classList.remove('hidden');
-                phoneInput.focus();
+            if (!isFirebaseReady || !validateIndianPhoneNumber(phoneValue)) {
+                showStatus("Validation Error: Please ensure all fields, especially your phone number, are valid and the app is initialized.", 'error');
                 return;
             }
             
@@ -414,12 +437,12 @@
                 await addDoc(publicListingsCollectionRef, listingData);
 
 
-                showStatus(`Success! Your item, '${listingData.itemName}', has been listed. Redirecting to Browse Rentals...`, 'success');
-                form.reset(); // Clear the form
-                
                 // 3. Redirect the user to browse.html after a short delay, passing item details
                 const redirectUrl = `./browse.html?listedItem=${encodeURIComponent(listingData.itemName)}&listerName=${encodeURIComponent(listingData.name)}`;
 
+                showStatus(`Success! Your item, '${listingData.itemName}', has been listed. Redirecting to Home...`, 'success');
+                form.reset(); // Clear the form
+                
                 setTimeout(() => {
                     window.location.href = redirectUrl;
                 }, 1500); // 1.5 seconds delay to show success message
